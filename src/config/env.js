@@ -21,6 +21,7 @@ export const env = {
 /** ตรวจค่าที่ขาดไม่ได้ตั้งแต่ตอนเปิดเครื่อง ดีกว่าไปพังตอนมีคนใช้งาน */
 export function assertEnv() {
   const missing = ['JWT_SECRET', 'DATABASE_URL'].filter((k) => !process.env[k]);
+  console.log('ALL ENV KEYS:', Object.keys(process.env));
   if (missing.length) {
     throw new Error(`ไม่ได้ตั้งค่าใน .env: ${missing.join(', ')}`);
   }
