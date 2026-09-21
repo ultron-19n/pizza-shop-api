@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FORNO · หลังร้าน</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@600;700&family=IBM+Plex+Sans+Thai:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--charcoal:#171310;--dough:#F7F1E4;--ember:#E2521A;--basil:#38614A;--tomato:#B23227;
+      --ink:#2A2320;--muted:#7A6E64;--line:#E0D6C4;--card:#FFFCF6}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'IBM Plex Sans Thai',system-ui,sans-serif;background:var(--dough);color:var(--ink);line-height:1.6}
+h1,h2,h3{font-family:'Bai Jamjuree',sans-serif;font-weight:700;line-height:1.2}
+button{font:inherit;cursor:pointer;border:none;background:none;color:inherit}
+input{font:inherit}
+.price{font-variant-numeric:tabular-nums}
+:focus-visible{outline:2px solid var(--ember);outline-offset:2px}
+
+header{background:var(--charcoal);color:var(--dough);position:sticky;top:0;z-index:20}
+.bar{max-width:1080px;margin:0 auto;padding:14px 20px;display:flex;align-items:center;gap:22px;flex-wrap:wrap}
+.logo{font-family:'Bai Jamjuree',sans-serif;font-weight:700;font-size:19px}
+.logo span{color:var(--ember)}
+.tabs{display:flex;gap:18px;font-size:15px;color:#B8AC9C}
+.tabs button[aria-pressed="true"]{color:var(--dough);border-bottom:2px solid var(--ember);padding-bottom:2px}
+.who{margin-left:auto;font-size:14px;color:#B8AC9C;display:flex;gap:14px;align-items:center}
+
+main{max-width:1080px;margin:0 auto;padding:26px 20px 80px}
+.panel{display:none}.panel.on{display:block}
+
+/* login */
+.login{max-width:380px;margin:70px auto;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:28px}
+.login h2{font-size:24px;margin-bottom:6px}
+.login p{color:var(--muted);font-size:14px;margin-bottom:20px}
+.field{margin-bottom:12px}
+.field label{display:block;font-size:13px;color:var(--muted);margin-bottom:4px}
+.field input{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:8px;background:#fff}
+.primary{width:100%;background:var(--ember);color:#fff;padding:12px;border-radius:8px;font-weight:600}
+.err{background:#FBEAE7;border:1px solid var(--tomato);color:var(--tomato);padding:10px 13px;border-radius:8px;font-size:14px;margin-bottom:12px}
+
+/* filters */
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+.chip{padding:7px 15px;border-radius:999px;border:1px solid var(--line);background:var(--card);font-size:14px}
+.chip[aria-pressed="true"]{background:var(--charcoal);color:var(--dough);border-color:var(--charcoal)}
+
+/* order cards */
+.order{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--muted);border-radius:10px;padding:16px 18px;margin-bottom:12px}
+.order.pending{border-left-color:var(--ember)}
+.order.preparing{border-left-color:#C99A2E}
+.order.ready{border-left-color:var(--basil)}
+.order.delivering{border-left-color:#3B6E9E}
+.order.completed{border-left-color:var(--line);opacity:.65}
+.order.cancelled{border-left-color:var(--tomato);opacity:.6}
+.o-top{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.o-code{font-family:'Bai Jamjuree',sans-serif;font-size:18px}
+.o-meta{font-size:13.5px;color:var(--muted)}
+.o-amt{margin-left:auto;font-family:'Bai Jamjuree',sans-serif;font-size:20px;color:var(--ember)}
+.o-cust{font-size:14px;color:var(--muted);margin-top:2px}
+.o-items{margin:10px 0 0;font-size:14.5px}
+.o-items li{list-style:none;padding:2px 0}
+.o-items .sub{color:var(--muted);font-size:13px;padding-left:14px}
+.o-note{font-size:13.5px;color:var(--tomato);margin-top:6px}
+.o-act{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.o-act button{padding:8px 15px;border-radius:7px;border:1px solid var(--line);font-size:14px;background:#fff}
+.o-act .next{background:var(--charcoal);color:var(--dough);border-color:var(--charcoal)}
+.o-act .pay{border-color:var(--basil);color:var(--basil)}
+.o-act .cancel{border-color:var(--tomato);color:var(--tomato)}
+.paid{font-size:13px;color:var(--basil)}
+
+/* table */
+table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+th,td{padding:11px 14px;text-align:left;border-bottom:1px solid var(--line);font-size:14.5px}
+th{background:#F0E8D8;font-weight:600;font-size:13px;color:var(--muted)}
+tr:last-child td{border-bottom:none}
+td.num{text-align:right;font-variant-numeric:tabular-nums}
+.low{color:var(--tomato);font-weight:600}
+.restock{padding:5px 12px;border:1px solid var(--line);border-radius:6px;font-size:13px;background:#fff}
+
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:22px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px}
+.stat b{display:block;font-family:'Bai Jamjuree',sans-serif;font-size:30px;color:var(--ember);line-height:1.2}
+.stat span{font-size:13.5px;color:var(--muted)}
+.empty{color:var(--muted);padding:26px 0;text-align:center}
+h2.sec{font-size:19px;margin:24px 0 12px}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="bar">
+    <div class="logo">FORNO<span>.</span> หลังร้าน</div>
+    <div class="tabs" id="tabs" hidden>
+      <button data-p="orders" aria-pressed="true">คิวออเดอร์</button>
+      <button data-p="stock"  aria-pressed="false">สต๊อก</button>
+      <button data-p="report" aria-pressed="false">รายงาน</button>
+    </div>
+    <div class="who" id="who" hidden><span id="whoName"></span><button id="logout">ออกจากระบบ</button></div>
+  </div>
+</header>
+
+<main>
+  <!-- ล็อกอิน -->
+  <section class="panel on" id="p-login">
+    <div class="login">
+      <h2>เข้าสู่ระบบ</h2>
+      <p>สำหรับพนักงานร้านเท่านั้น</p>
+      <div id="loginErr"></div>
+      <div class="field"><label for="u">ชื่อผู้ใช้</label><input id="u" autocomplete="username"></div>
+      <div class="field"><label for="p">รหัสผ่าน</label><input id="p" type="password" autocomplete="current-password"></div>
+      <button class="primary" id="loginBtn">เข้าสู่ระบบ</button>
+    </div>
+  </section>
+
+  <!-- คิวออเดอร์ -->
+  <section class="panel" id="p-orders">
+    <div class="filters" id="statusFilter">
+      <button class="chip" data-s="" aria-pressed="true">ทั้งหมด</button>
+      <button class="chip" data-s="pending" aria-pressed="false">รอทำ</button>
+      <button class="chip" data-s="preparing" aria-pressed="false">กำลังทำ</button>
+      <button class="chip" data-s="ready" aria-pressed="false">พร้อมเสิร์ฟ</button>
+      <button class="chip" data-s="delivering" aria-pressed="false">กำลังส่ง</button>
+      <button class="chip" data-s="completed" aria-pressed="false">เสร็จแล้ว</button>
+    </div>
+    <div id="orderList"><p class="empty">กำลังโหลด…</p></div>
+  </section>
+
+  <!-- สต๊อก -->
+  <section class="panel" id="p-stock">
+    <h2 class="sec">วัตถุดิบในคลัง</h2>
+    <table><thead><tr>
+      <th>วัตถุดิบ</th><th class="num">คงเหลือ</th><th class="num">ขั้นต่ำ</th><th>หน่วย</th><th></th>
+    </tr></thead><tbody id="stockBody"></tbody></table>
+  </section>
+
+  <!-- รายงาน -->
+  <section class="panel" id="p-report">
+    <div class="stats" id="stats"></div>
+    <h2 class="sec">ยอดขายรายวัน</h2>
+    <table><thead><tr>
+      <th>วันที่</th><th class="num">จำนวนออเดอร์</th><th class="num">ยอดขาย</th><th class="num">เฉลี่ย/บิล</th>
+    </tr></thead><tbody id="dailyBody"></tbody></table>
+    <h2 class="sec">เมนูขายดี</h2>
+    <table><thead><tr>
+      <th>เมนู</th><th class="num">ขายได้ (ชิ้น)</th><th class="num">ยอดขาย</th>
+    </tr></thead><tbody id="bestBody"></tbody></table>
+  </section>
+</main>
+
+<script>
+const API = location.origin + '/api';
+const money = n => Number(n||0).toLocaleString('th-TH',{minimumFractionDigits:0,maximumFractionDigits:2}) + ' ฿';
+/** escape ก่อนใส่ลง innerHTML — ชื่อ/หมายเหตุมาจากลูกค้าที่ไม่ต้องล็อกอิน ห้ามเชื่อถือ */
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const TH = { pending:'รอทำ', preparing:'กำลังทำ', ready:'พร้อมเสิร์ฟ', delivering:'กำลังส่ง',
+             completed:'เสร็จแล้ว', cancelled:'ยกเลิก',
+             delivery:'ส่งถึงบ้าน', pickup:'รับที่ร้าน', dine_in:'ทานที่ร้าน' };
+const NEXT = { pending:'preparing', preparing:'ready', ready:'delivering', delivering:'completed' };
+const NEXT_LABEL = { pending:'เริ่มทำ', preparing:'ทำเสร็จแล้ว', ready:'ออกส่ง', delivering:'ส่งถึงแล้ว' };
+
+/** ขั้นถัดไปของออเดอร์ — รับที่ร้าน/ทานที่ร้านไม่มีขั้น "กำลังส่ง" จึงจาก ready ไป completed เลย */
+function nextStep(o){
+  if(o.status === 'ready' && o.order_type !== 'delivery') return { to:'completed', label:'ส่งมอบแล้ว' };
+  return NEXT[o.status] ? { to:NEXT[o.status], label:NEXT_LABEL[o.status] } : null;
+}
+
+let token = null, statusFilter = '', timer = null;
+
+const api = (path, opt = {}) => fetch(API + path, {
+  ...opt,
+  headers: { 'Content-Type':'application/json', ...(token ? {Authorization:'Bearer ' + token} : {}), ...(opt.headers||{}) }
+}).then(async r => { const d = await r.json(); if(!r.ok) throw new Error(d.message); return d; });
+
+/* ---------- ล็อกอิน ---------- */
+loginBtn.onclick = async () => {
+  loginErr.innerHTML = '';
+  try{
+    const d = await api('/auth/login', { method:'POST', body: JSON.stringify({ username:u.value, password:p.value }) });
+    token = d.token;
+    whoName.textContent = (d.user.first_name || d.user.username) + ' · ' + d.user.role;
+    tabs.hidden = false; who.hidden = false;
+    show('orders');
+  }catch(e){
+    loginErr.innerHTML = `<div class="err">${esc(e.message)}</div>`;
+  }
+};
+p.addEventListener('keydown', e => { if(e.key === 'Enter') loginBtn.click(); });
+
+logout.onclick = () => { token = null; clearInterval(timer); tabs.hidden = true; who.hidden = true; show('login'); };
+
+/* ---------- สลับแท็บ ---------- */
+tabs.onclick = e => { const b = e.target.closest('button[data-p]'); if(b) show(b.dataset.p); };
+function show(name){
+  document.querySelectorAll('.panel').forEach(s => s.classList.toggle('on', s.id === 'p-' + name));
+  [...tabs.children].forEach(b => b.setAttribute('aria-pressed', b.dataset.p === name));
+  clearInterval(timer);
+  if(name === 'orders'){ loadOrders(); timer = setInterval(loadOrders, 15000); }
+  if(name === 'stock')  loadStock();
+  if(name === 'report') loadReport();
+}
+
+/* ---------- คิวออเดอร์ ---------- */
+document.getElementById('statusFilter').onclick = e => {
+  const b = e.target.closest('.chip'); if(!b) return;
+  [...b.parentElement.children].forEach(c => c.setAttribute('aria-pressed', c === b));
+  statusFilter = b.dataset.s; loadOrders();
+};
+
+async function loadOrders(){
+  try{
+    const list = await api('/orders' + (statusFilter ? '?status=' + statusFilter : ''));
+    if(!list.length){ orderList.innerHTML = '<p class="empty">ยังไม่มีออเดอร์ในหมวดนี้</p>'; return; }
+    const full = await Promise.all(list.slice(0,30).map(o => api('/orders/' + o.id)));
+    orderList.innerHTML = full.map(card).join('');
+  }catch(e){ orderList.innerHTML = `<div class="err">${esc(e.message)}</div>`; }
+}
+
+function card(o){
+  const t = new Date(o.created_at).toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'});
+  const paid = o.payment?.status === 'paid';
+  const step = nextStep(o);
+  return `<article class="order ${esc(o.status)}">
+    <div class="o-top">
+      <span class="o-code">${esc(o.order_code)}</span>
+      <span class="o-meta">${esc(TH[o.order_type])} · ${esc(TH[o.status])} · ${esc(t)} น.</span>
+      <span class="o-amt price">${money(o.total_amount)}</span>
+    </div>
+    ${o.customer?.phone ? `<div class="o-cust">${esc(o.customer.name)} · ${esc(o.customer.phone)}</div>` : ''}
+    <ul class="o-items">
+      ${o.items.map(i => `<li>• ${esc(i.menu_name)}${i.size && i.size !== 'STD' ? ' ' + esc(i.size) : ''} × ${esc(i.quantity)}
+        ${i.toppings.length ? `<div class="sub">+ ${i.toppings.map(t => esc(t.name)).join(', ')}</div>` : ''}</li>`).join('')}
+    </ul>
+    ${o.note ? `<div class="o-note">หมายเหตุ: ${esc(o.note)}</div>` : ''}
+    <div class="o-act">
+      ${paid ? '<span class="paid">ชำระแล้ว</span>'
+             : `<button class="pay" data-pay="${esc(o.id)}">รับชำระ</button>`}
+      ${step ? `<button class="next" data-next="${esc(o.id)}" data-to="${esc(step.to)}">${esc(step.label)}</button>` : ''}
+      ${['pending','preparing'].includes(o.status) ? `<button class="cancel" data-cancel="${esc(o.id)}">ยกเลิก</button>` : ''}
+    </div>
+  </article>`;
+}
+
+orderList.onclick = async e => {
+  const b = e.target.closest('button'); if(!b) return;
+  try{
+    if(b.dataset.next)   await api(`/orders/${b.dataset.next}/status`, { method:'PATCH', body: JSON.stringify({ status:b.dataset.to }) });
+    if(b.dataset.cancel) { if(!confirm('ยกเลิกออเดอร์นี้?')) return;
+                           await api(`/orders/${b.dataset.cancel}/status`, { method:'PATCH', body: JSON.stringify({ status:'cancelled' }) }); }
+    if(b.dataset.pay)    await api(`/orders/${b.dataset.pay}/pay`, { method:'POST', body: JSON.stringify({ method:'cash' }) });
+    loadOrders();
+  }catch(err){ alert(err.message); }
+};
+
+/* ---------- สต๊อก ---------- */
+async function loadStock(){
+  const rows = await api('/ingredients');
+  stockBody.innerHTML = rows.map(r => `<tr>
+    <td>${esc(r.name)}</td>
+    <td class="num ${r.is_low ? 'low' : ''}">${Number(r.stock_quantity).toFixed(2)}</td>
+    <td class="num">${Number(r.min_required_quantity).toFixed(2)}</td>
+    <td>${esc(r.unit)}</td>
+    <td><button class="restock" data-id="${esc(r.id)}" data-name="${esc(r.name)}">รับของเข้า</button></td>
+  </tr>`).join('');
+}
+
+stockBody.onclick = async e => {
+  const b = e.target.closest('.restock'); if(!b) return;
+  const qty = prompt(`รับ ${b.dataset.name} เข้าคลังกี่หน่วย?`);
+  if(!qty) return;
+  try{
+    await api(`/ingredients/${b.dataset.id}/restock`, { method:'POST', body: JSON.stringify({ quantity:Number(qty) }) });
+    loadStock();
+  }catch(err){ alert(err.message); }
+};
+
+/* ---------- รายงาน ---------- */
+async function loadReport(){
+  const r = await api('/orders/report/summary');
+  const today = r.daily[0];
+  const revenue = r.daily.reduce((s,d) => s + Number(d.revenue), 0);
+  stats.innerHTML = `
+    <div class="stat"><b class="price">${money(today?.revenue)}</b><span>ยอดขายวันล่าสุด</span></div>
+    <div class="stat"><b>${today?.total_orders || 0}</b><span>ออเดอร์วันล่าสุด</span></div>
+    <div class="stat"><b class="price">${money(today?.avg_order_value)}</b><span>เฉลี่ยต่อบิล</span></div>
+    <div class="stat"><b class="price">${money(revenue)}</b><span>ยอดสะสม 30 วัน</span></div>`;
+
+  dailyBody.innerHTML = r.daily.length
+    ? r.daily.map(d => `<tr><td>${esc(d.sale_date?.slice(0,10) ?? d.sale_date)}</td>
+        <td class="num">${esc(d.total_orders)}</td><td class="num">${money(d.revenue)}</td>
+        <td class="num">${money(d.avg_order_value)}</td></tr>`).join('')
+    : '<tr><td colspan="4" class="empty">ยังไม่มีออเดอร์ที่ปิดการขาย</td></tr>';
+
+  bestBody.innerHTML = r.best_sellers.length
+    ? r.best_sellers.map(b => `<tr><td>${esc(b.name)}</td><td class="num">${esc(b.sold)}</td>
+        <td class="num">${money(b.revenue)}</td></tr>`).join('')
+    : '<tr><td colspan="3" class="empty">ยังไม่มีข้อมูล</td></tr>';
+}
+</script>
+</body>
+</html>

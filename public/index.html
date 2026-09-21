@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FORNO — พิซซ่าเตาถ่าน</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@600;700&family=IBM+Plex+Sans+Thai:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --charcoal:#171310;
+  --dough:#F7F1E4;
+  --ember:#E2521A;
+  --basil:#38614A;
+  --tomato:#B23227;
+  --ink:#2A2320;
+  --muted:#7A6E64;
+  --line:#E0D6C4;
+  --card:#FFFCF6;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:'IBM Plex Sans Thai',system-ui,sans-serif;
+  background:var(--dough); color:var(--ink);
+  font-size:16px; line-height:1.6;
+}
+h1,h2,h3,.display{font-family:'Bai Jamjuree','IBM Plex Sans Thai',sans-serif;font-weight:700;line-height:1.15}
+button{font:inherit;cursor:pointer;border:none;background:none;color:inherit}
+input,select{font:inherit}
+.price{font-variant-numeric:tabular-nums}
+:focus-visible{outline:2px solid var(--ember);outline-offset:2px}
+
+/* ---------- header ---------- */
+header{background:var(--charcoal);color:var(--dough);position:sticky;top:0;z-index:40}
+.bar{max-width:1180px;margin:0 auto;padding:14px 20px;display:flex;align-items:center;gap:16px}
+.logo{font-family:'Bai Jamjuree',sans-serif;font-weight:700;font-size:22px;letter-spacing:.02em}
+.logo span{color:var(--ember)}
+.bar nav{margin-left:auto;display:flex;gap:20px;font-size:15px;color:#CFC5B5}
+.bar nav a{color:inherit;text-decoration:none}
+.bar nav a:hover{color:var(--dough)}
+@media(max-width:720px){.bar nav{display:none}}
+
+/* ---------- hero ---------- */
+.hero{background:var(--charcoal);color:var(--dough);padding:4px 20px 32px}
+.hero-in{max-width:1180px;margin:0 auto;display:grid;grid-template-columns:1fr auto;gap:24px;align-items:end}
+.hero h1{font-size:clamp(28px,4vw,44px);max-width:22ch}
+.hero p{color:#B8AC9C;margin-top:10px;max-width:44ch;font-size:15px}
+.oven{font-size:13px;color:#B8AC9C;text-align:right;line-height:1.9}
+.oven b{display:block;font-family:'Bai Jamjuree',sans-serif;font-size:40px;color:var(--ember);line-height:1}
+@media(max-width:720px){.hero-in{grid-template-columns:1fr}.oven{text-align:left}}
+
+/* ---------- layout ---------- */
+.wrap{max-width:1180px;margin:0 auto;padding:28px 20px 120px;display:grid;grid-template-columns:1fr 330px;gap:32px;align-items:start}
+@media(max-width:900px){.wrap{grid-template-columns:1fr}}
+
+/* ---------- filters ---------- */
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
+.chip{padding:7px 16px;border-radius:999px;border:1px solid var(--line);background:var(--card);font-size:14px}
+.chip[aria-pressed="true"]{background:var(--charcoal);color:var(--dough);border-color:var(--charcoal)}
+
+/* ---------- menu grid ---------- */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px}
+.item{background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden;display:flex;flex-direction:column}
+.thumb{aspect-ratio:4/3;background:#2b2622;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.thumb img{width:100%;height:100%;object-fit:contain;padding:12px}.item-body{padding:14px;display:flex;flex-direction:column;gap:6px;flex:1}
+.item h3{font-size:18px}
+.item .desc{font-size:13.5px;color:var(--muted);flex:1}
+.item-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:8px}
+.from{font-size:13px;color:var(--muted)}
+.from b{font-family:'Bai Jamjuree',sans-serif;font-size:20px;color:var(--ember);display:block}
+.pick{background:var(--charcoal);color:var(--dough);padding:9px 16px;border-radius:7px;font-size:14px;font-weight:500}
+.pick:hover{background:var(--ember)}
+.sold-out{opacity:.5;pointer-events:none}
+
+/* ---------- cart ---------- */
+.cart{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:18px;position:sticky;top:82px}
+.cart h2{font-size:19px;margin-bottom:14px}
+.empty{color:var(--muted);font-size:14px;padding:18px 0}
+.line{display:grid;grid-template-columns:1fr auto;gap:6px;padding:12px 0;border-top:1px solid var(--line)}
+.line .n{font-weight:600;font-size:15px}
+.line .opt{font-size:13px;color:var(--muted);grid-column:1/-1;margin-top:-4px}
+.qty{display:flex;align-items:center;gap:10px;margin-top:6px}
+.qty button{width:26px;height:26px;border:1px solid var(--line);border-radius:6px;line-height:1}
+.qty button:hover{border-color:var(--ember);color:var(--ember)}
+.rm{font-size:13px;color:var(--tomato);margin-left:auto}
+.promo{display:flex;gap:8px;margin:14px 0}
+.promo input{flex:1;min-width:0;padding:9px 12px;border:1px solid var(--line);border-radius:7px;background:#fff}
+.promo button{padding:9px 14px;border:1px solid var(--charcoal);border-radius:7px;font-size:14px}
+.sums{border-top:1px solid var(--line);padding-top:12px;font-size:14.5px}
+.sums div{display:flex;justify-content:space-between;padding:3px 0;color:var(--muted)}
+.sums .total{color:var(--ink);font-weight:600;font-size:17px;padding-top:8px;margin-top:6px;border-top:1px solid var(--line)}
+.sums .total .price{font-family:'Bai Jamjuree',sans-serif;font-size:24px;color:var(--ember)}
+.modes{display:flex;gap:8px;margin:14px 0}
+.modes button{flex:1;padding:9px;border:1px solid var(--line);border-radius:7px;font-size:14px;background:#fff}
+.modes button[aria-pressed="true"]{background:var(--basil);color:#fff;border-color:var(--basil)}
+.go{width:100%;background:var(--ember);color:#fff;padding:13px;border-radius:8px;font-weight:600;font-size:16px}
+.go:disabled{background:#D6CCBC;color:#8A7F73;cursor:not-allowed}
+
+/* ---------- mobile cart bar ---------- */
+.mobile-bar{display:none;position:fixed;left:0;right:0;bottom:0;z-index:45;background:var(--charcoal);color:var(--dough);padding:12px 18px;align-items:center;justify-content:space-between;gap:12px}
+.mobile-bar b{font-family:'Bai Jamjuree',sans-serif;font-size:19px}
+.mobile-bar button{background:var(--ember);color:#fff;padding:9px 18px;border-radius:7px;font-weight:600}
+@media(max-width:900px){
+  .mobile-bar{display:flex}
+  .cart{position:fixed;inset:0;z-index:50;border-radius:0;overflow-y:auto;display:none}
+  .cart.open{display:block}
+  .cart .close-cart{display:block}
+}
+.close-cart{display:none;float:right;font-size:22px;color:var(--muted)}
+
+/* ---------- modal ---------- */
+.backdrop{position:fixed;inset:0;background:rgba(23,19,16,.6);display:none;z-index:60;padding:20px;overflow-y:auto}
+.backdrop.open{display:grid;place-items:center}
+.modal{background:var(--card);border-radius:12px;max-width:460px;width:100%;overflow:hidden}
+.modal-head{padding:18px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:12px;align-items:start}
+.modal-head h3{font-size:22px}
+.modal-head p{font-size:13.5px;color:var(--muted);margin-top:2px}
+.modal-body{padding:18px 20px;max-height:52vh;overflow-y:auto}
+.modal-body h4{font-size:14px;color:var(--muted);font-weight:500;margin-bottom:8px}
+.opt-row{display:flex;align-items:center;gap:11px;padding:9px 0;border-bottom:1px solid var(--line);cursor:pointer;font-size:15px}
+.opt-row:last-child{border-bottom:none}
+.opt-row .p{margin-left:auto;color:var(--muted);font-size:14px}
+.opt-row input{accent-color:var(--ember);width:17px;height:17px}
+.modal-foot{padding:16px 20px;border-top:1px solid var(--line);display:flex;gap:12px;align-items:center}
+.modal-foot .go{flex:1;width:auto}
+
+/* ---------- toast / receipt ---------- */
+.receipt{background:var(--card);border-radius:12px;max-width:420px;width:100%;padding:26px;text-align:center}
+.receipt .code{font-family:'Bai Jamjuree',sans-serif;font-size:28px;color:var(--basil);margin:10px 0}
+.receipt .amt{font-family:'Bai Jamjuree',sans-serif;font-size:34px;color:var(--ember);margin:14px 0}
+.err{background:#FBEAE7;border:1px solid var(--tomato);color:var(--tomato);padding:11px 14px;border-radius:8px;font-size:14px;margin-bottom:12px}
+.field{margin-bottom:10px}
+.field label{display:block;font-size:13px;color:var(--muted);margin-bottom:4px}
+.field input{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:7px;background:#fff}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="bar">
+    <div class="logo">FORNO<span>.</span></div>
+    <nav>
+      <a href="#menu">เมนู</a>
+      <a href="#" id="promoLink">โปรโมชั่น</a>
+      <a href="admin.html">สำหรับพนักงาน</a>
+    </nav>
+  </div>
+  <div class="hero">
+    <div class="hero-in">
+      <div>
+        <h1>พิซซ่าเตาถ่านสไตล์โฮมเมด เสิร์ฟร้อนส่งตรงถึงบ้าน</h1>
+        <p>แป้งหมักสูตรพิเศษ อบด้วยเตาถ่านความร้อนสูง หอมกรอบ นุ่มนอกฉ่ำใน</p>
+      </div>
+      <div class="oven"><b>ส่งร้อน</b>ภายใน 30 นาที<br>เปิด 10:00 – 22:00 น.</div>
+    </div>
+  </div>
+</header>
+
+<main class="wrap" id="menu">
+  <section>
+    <div class="filters" id="filters"></div>
+    <div class="grid" id="grid"><p class="empty">กำลังโหลดเมนู…</p></div>
+  </section>
+
+  <aside class="cart" id="cart">
+    <button class="close-cart" id="closeCart" aria-label="ปิดตะกร้า">✕</button>
+    <h2>ตะกร้า</h2>
+    <div id="lines"><p class="empty">ยังไม่ได้เลือกอะไร เริ่มจากพิซซ่าสักถาดไหม</p></div>
+
+    <div class="promo">
+      <input id="promoCode" placeholder="โค้ดส่วนลด" autocomplete="off">
+      <button id="applyPromo">ใช้โค้ด</button>
+    </div>
+
+    <div class="modes">
+      <button id="mDelivery" aria-pressed="true">ส่งถึงบ้าน</button>
+      <button id="mPickup" aria-pressed="false">รับที่ร้าน</button>
+    </div>
+
+    <div class="sums">
+      <div><span>ยอดรวม</span><span class="price" id="sSub">0 ฿</span></div>
+      <div><span>ส่วนลด</span><span class="price" id="sDisc">0 ฿</span></div>
+      <div><span>ค่าส่ง</span><span class="price" id="sFee">0 ฿</span></div>
+      <div class="total"><span>รวมสุทธิ</span><span class="price" id="sTotal">0 ฿</span></div>
+    </div>
+
+    <div style="margin-top:16px">
+      <div class="field"><label for="cName">ชื่อผู้สั่ง</label><input id="cName" placeholder="สมชาย ใจดี"></div>
+      <div class="field"><label for="cPhone">เบอร์โทร</label><input id="cPhone" placeholder="0812345678" inputmode="tel"></div>
+      <div class="field" id="addrField"><label for="cAddr">ที่อยู่จัดส่ง</label><input id="cAddr" placeholder="บ้านเลขที่ ถนน แขวง เขต"></div>
+    </div>
+    <button class="go" id="submitOrder" disabled>สั่งซื้อ</button>
+  </aside>
+</main>
+
+<div class="mobile-bar" id="mobileBar">
+  <div>ตะกร้า <span id="mCount">0</span> รายการ · <b class="price" id="mTotal">0 ฿</b></div>
+  <button id="openCart">ดูตะกร้า</button>
+</div>
+
+<!-- modal เลือกขนาด -->
+<div class="backdrop" id="backdrop">
+  <div class="modal" id="modal"></div>
+</div>
+
+<script>
+const API = location.origin + '/api';
+const money = n => Number(n).toLocaleString('th-TH', {minimumFractionDigits:0, maximumFractionDigits:2}) + ' ฿';
+const DELIVERY_FEE = 39;
+/** escape ก่อนใส่ลง innerHTML */
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+let menu = [], toppings = [], cart = [], activeCat = null;
+let mode = 'delivery', promo = null;
+
+/* ---------------- โหลดข้อมูล ---------------- */
+async function boot(){
+  try{
+    const [m, t] = await Promise.all([
+      fetch(API + '/menu').then(r => r.json()),
+      fetch(API + '/menu/toppings/all').then(r => r.json())
+    ]);
+    menu = m; toppings = t;
+    renderFilters(); renderMenu();
+  }catch{
+    document.getElementById('grid').innerHTML =
+      '<p class="empty">เชื่อมต่อเซิร์ฟเวอร์ไม่ได้ ลองสั่ง npm run dev แล้วรีเฟรชหน้านี้อีกครั้ง</p>';
+  }
+}
+
+function renderFilters(){
+  const cats = [...new Map(menu.map(m => [m.category_id, m.category_name])).entries()];
+  const box = document.getElementById('filters');
+  box.innerHTML = `<button class="chip" data-cat="" aria-pressed="true">ทั้งหมด</button>` +
+    cats.map(([id,name]) => `<button class="chip" data-cat="${esc(id)}" aria-pressed="false">${esc(name)}</button>`).join('');
+  box.onclick = e => {
+    const b = e.target.closest('.chip'); if(!b) return;
+    [...box.children].forEach(c => c.setAttribute('aria-pressed', c === b));
+    activeCat = b.dataset.cat || null;
+    renderMenu();
+  };
+}
+
+function renderMenu(){
+  const list = activeCat ? menu.filter(m => String(m.category_id) === activeCat) : menu;
+  document.getElementById('grid').innerHTML = list.map(m => {
+    const prices = m.variants.filter(v => v.is_available).map(v => Number(v.price));
+    const min = prices.length ? Math.min(...prices) : null;
+    return `<article class="item ${min===null?'sold-out':''}">
+<div class="thumb">${m.image_url ? `<img src="${esc(m.image_url)}" alt="${esc(m.name)}">` : '🍕'}</div>      <div class="item-body">
+        <h3>${esc(m.name)}</h3>
+        <p class="desc">${esc(m.description)}</p>
+        <div class="item-foot">
+          <span class="from">เริ่มต้น<b class="price">${min===null?'—':money(min)}</b></span>
+          <button class="pick" data-id="${esc(m.id)}">เลือก</button>
+        </div>
+      </div>
+    </article>`;
+  }).join('');
+  document.getElementById('grid').onclick = e => {
+    const b = e.target.closest('.pick'); if(b) openPicker(Number(b.dataset.id));
+  };
+}
+
+/* ---------------- modal เลือกขนาด/ท็อปปิ้ง ---------------- */
+let picking = null;
+function openPicker(id){
+  const item = menu.find(m => m.id === id);
+  const vs = item.variants.filter(v => v.is_available);
+  picking = { item, variantId: vs[0]?.id, qty: 1, tops: new Set() };
+  const isPizza = vs.length > 1;
+
+  document.getElementById('modal').innerHTML = `
+    <div class="modal-head">
+      <div><h3>${esc(item.name)}</h3><p>${esc(item.description)}</p></div>
+      <button id="mClose" aria-label="ปิด" style="font-size:20px;color:var(--muted)">✕</button>
+    </div>
+    <div class="modal-body">
+      <h4>${isPizza ? 'ขนาดและขอบ' : 'ตัวเลือก'}</h4>
+      ${vs.map((v,i) => `<label class="opt-row">
+        <input type="radio" name="v" value="${esc(v.id)}" ${i===0?'checked':''}>
+        <span>${v.size === 'STD' ? 'ปกติ' : esc(v.size) + ' · ขอบ' + esc(crustTH(v.crust))}</span>
+        <span class="p price">${money(v.price)}</span></label>`).join('')}
+      ${isPizza ? `<h4 style="margin-top:18px">ท็อปปิ้งเพิ่ม</h4>
+        ${toppings.map(t => `<label class="opt-row">
+          <input type="checkbox" value="${esc(t.id)}">
+          <span>${esc(t.name)}</span><span class="p price">+${money(t.price)}</span></label>`).join('')}` : ''}
+    </div>
+    <div class="modal-foot">
+      <div class="qty">
+        <button id="qMinus" aria-label="ลดจำนวน">−</button>
+        <span id="qNum">1</span>
+        <button id="qPlus" aria-label="เพิ่มจำนวน">+</button>
+      </div>
+      <button class="go" id="addBtn"></button>
+    </div>`;
+
+  const modal = document.getElementById('modal');
+  modal.onchange = () => {
+    picking.variantId = Number(modal.querySelector('input[name=v]:checked').value);
+    picking.tops = new Set([...modal.querySelectorAll('input[type=checkbox]:checked')].map(c => Number(c.value)));
+    priceBtn();
+  };
+  document.getElementById('qMinus').onclick = () => { picking.qty = Math.max(1, picking.qty-1); document.getElementById('qNum').textContent = picking.qty; priceBtn(); };
+  document.getElementById('qPlus').onclick  = () => { picking.qty++; document.getElementById('qNum').textContent = picking.qty; priceBtn(); };
+  document.getElementById('mClose').onclick = closeModal;
+  document.getElementById('addBtn').onclick = addToCart;
+  priceBtn();
+  document.getElementById('backdrop').classList.add('open');
+}
+
+const crustTH = c => ({classic:'ธรรมดา', thin:'บาง', pan:'หนานุ่ม', cheese_burst:'ชีสยืด'}[c] || c || '');
+
+function pickPrice(){
+  const v = picking.item.variants.find(x => x.id === picking.variantId);
+  let unit = Number(v.price);
+  picking.tops.forEach(id => unit += Number(toppings.find(t => t.id === id).price));
+  return unit * picking.qty;
+}
+function priceBtn(){ document.getElementById('addBtn').textContent = 'ใส่ตะกร้า ' + money(pickPrice()); }
+function closeModal(){ document.getElementById('backdrop').classList.remove('open'); }
+document.getElementById('backdrop').onclick = e => { if(e.target.id === 'backdrop') closeModal(); };
+
+function addToCart(){
+  const v = picking.item.variants.find(x => x.id === picking.variantId);
+  const tops = [...picking.tops].map(id => toppings.find(t => t.id === id));
+  let unit = Number(v.price); tops.forEach(t => unit += Number(t.price));
+  cart.push({
+    variantId: v.id, name: picking.item.name,
+    label: v.size === 'STD' ? '' : v.size + ' · ขอบ' + crustTH(v.crust),
+    tops, qty: picking.qty, unit
+  });
+  closeModal(); renderCart();
+}
+
+/* ---------------- ตะกร้า ---------------- */
+function renderCart(){
+  const box = document.getElementById('lines');
+  if(!cart.length){
+    box.innerHTML = '<p class="empty">ยังไม่ได้เลือกอะไร เริ่มจากพิซซ่าสักถาดไหม</p>';
+  } else {
+    box.innerHTML = cart.map((c,i) => `
+      <div class="line">
+        <div>
+          <div class="n">${esc(c.name)}${c.label ? ' <span style="font-weight:400;color:var(--muted)">'+esc(c.label)+'</span>' : ''}</div>
+          ${c.tops.length ? `<div class="opt">+ ${c.tops.map(t=>esc(t.name)).join(', ')}</div>` : ''}
+          <div class="qty">
+            <button data-a="-" data-i="${i}" aria-label="ลดจำนวน">−</button>
+            <span>${c.qty}</span>
+            <button data-a="+" data-i="${i}" aria-label="เพิ่มจำนวน">+</button>
+            <button class="rm" data-a="x" data-i="${i}">เอาออก</button>
+          </div>
+        </div>
+        <div class="price" style="font-weight:600">${money(c.unit * c.qty)}</div>
+      </div>`).join('');
+    box.onclick = e => {
+      const b = e.target.closest('button[data-a]'); if(!b) return;
+      const i = Number(b.dataset.i);
+      if(b.dataset.a === '+') cart[i].qty++;
+      if(b.dataset.a === '-') cart[i].qty > 1 ? cart[i].qty-- : cart.splice(i,1);
+      if(b.dataset.a === 'x') cart.splice(i,1);
+      renderCart();
+    };
+  }
+  updateSums();
+}
+
+function updateSums(){
+  const sub = cart.reduce((s,c) => s + c.unit * c.qty, 0);
+  let disc = 0;
+  if(promo && sub >= Number(promo.min_order_amount)){
+    disc = promo.discount_type === 'percent' ? sub * Number(promo.discount_value)/100 : Number(promo.discount_value);
+    disc = Math.min(disc, sub);
+  }
+  const fee = (mode === 'delivery' && cart.length) ? DELIVERY_FEE : 0;
+  const total = sub - disc + fee;
+
+  sSub.textContent = money(sub); sDisc.textContent = disc ? '−' + money(disc) : money(0);
+  sFee.textContent = money(fee); sTotal.textContent = money(total);
+  mTotal.textContent = money(total);
+  mCount.textContent = cart.reduce((s,c) => s + c.qty, 0);
+  submitOrder.disabled = cart.length === 0;
+}
+
+/* ---------------- โหมด / โค้ดส่วนลด ---------------- */
+mDelivery.onclick = () => setMode('delivery');
+mPickup.onclick   = () => setMode('pickup');
+function setMode(m){
+  mode = m;
+  mDelivery.setAttribute('aria-pressed', m === 'delivery');
+  mPickup.setAttribute('aria-pressed', m === 'pickup');
+  addrField.style.display = m === 'delivery' ? '' : 'none';
+  updateSums();
+}
+
+applyPromo.onclick = async () => {
+  const code = promoCode.value.trim().toUpperCase();
+  if(!code) return;
+  applyPromo.disabled = true; applyPromo.textContent = 'กำลังตรวจ…';
+  try{
+    // ถามเซิร์ฟเวอร์ว่าโค้ดนี้ใช้ได้จริงไหม ยอดที่แสดงจะได้ตรงกับตอนกดสั่ง
+    const res = await fetch(`${API}/orders/promotions/${encodeURIComponent(code)}`);
+    const data = await res.json();
+    if(!res.ok) throw new Error(data.message);
+    promo = data;
+    applyPromo.textContent = 'ใช้แล้ว';
+  }catch(err){
+    promo = null;
+    showError(err.message || 'ใช้โค้ดนี้ไม่ได้');
+    applyPromo.textContent = 'ใช้โค้ด';
+  }finally{
+    applyPromo.disabled = false;
+    updateSums();
+    setTimeout(() => { if(applyPromo.textContent === 'ใช้แล้ว') applyPromo.textContent = 'ใช้โค้ด'; }, 1500);
+  }
+};
+promoLink.onclick = e => { e.preventDefault(); alert('WELCOME10 — ลด 10% เมื่อครบ 200 บาท\nSAVE50 — ลด 50 บาท เมื่อครบ 500 บาท'); };
+
+/* ---------------- ตะกร้าบนมือถือ ---------------- */
+openCart.onclick  = () => cart_.classList.add('open');
+closeCart.onclick = () => cart_.classList.remove('open');
+const cart_ = document.getElementById('cart');
+
+/* ---------------- ส่งออเดอร์ ---------------- */
+submitOrder.onclick = async () => {
+  const name  = cName.value.trim();
+  const phone = cPhone.value.trim();
+  if(!phone){ showError('กรอกเบอร์โทรก่อนสั่งซื้อ เราใช้ติดต่อตอนอาหารพร้อม'); return; }
+  if(mode === 'delivery' && !cAddr.value.trim()){ showError('กรอกที่อยู่จัดส่งด้วย'); return; }
+
+  submitOrder.disabled = true; submitOrder.textContent = 'กำลังส่งออเดอร์…';
+  try{
+    const [first, ...rest] = name.split(' ');
+
+    // ส่งลูกค้า/ที่อยู่ไปกับออเดอร์ในคำขอเดียว — เซิร์ฟเวอร์สร้างให้ใน transaction เดียวกัน
+    const res = await fetch(API + '/orders', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        customer: { first_name:first || 'ลูกค้า', last_name:rest.join(' '), phone_number:phone },
+        order_type: mode,
+        address: mode === 'delivery' ? { address_line:cAddr.value.trim() } : undefined,
+        promotion_code: promo?.code || null,
+        items: cart.map(c => ({
+          pizza_variant_id: c.variantId,
+          quantity: c.qty,
+          toppings: c.tops.map(t => ({ topping_id:t.id, quantity:1 }))
+        }))
+      })
+    });
+    const order = await res.json();
+    if(!res.ok) throw new Error(order.message);
+    showReceipt(order);
+    cart = []; promo = null; promoCode.value = ''; renderCart();
+    cart_.classList.remove('open');
+  }catch(err){
+    showError(err.message || 'ส่งออเดอร์ไม่สำเร็จ ลองอีกครั้ง');
+  }finally{
+    submitOrder.textContent = 'สั่งซื้อ';
+    updateSums();   // ตะกร้าว่างหลังสั่งสำเร็จ ปุ่มต้องกลับไปปิด ไม่ใช่เปิดค้างไว้ให้กดซ้ำ
+  }
+};
+
+function showError(msg){
+  document.querySelectorAll('.err').forEach(e => e.remove());
+  const d = document.createElement('div'); d.className = 'err'; d.textContent = msg;
+  submitOrder.before(d);
+  setTimeout(() => d.remove(), 6000);
+}
+
+function showReceipt(o){
+  document.getElementById('modal').outerHTML = `<div class="receipt" id="modal">
+    <div style="font-size:44px">🍕</div>
+    <h3 style="margin-top:8px">รับออเดอร์แล้ว</h3>
+    <div class="code">${esc(o.order_code)}</div>
+    <p style="color:var(--muted);font-size:14px">
+      ${o.order_type === 'delivery' ? 'กำลังเตรียมของ แล้วจะออกส่งภายใน 30–45 นาที' : 'มารับที่ร้านได้ในอีกประมาณ 20 นาที'}
+    </p>
+    <div class="amt price">${money(o.total_amount)}</div>
+    <button class="go" onclick="location.reload()">สั่งเพิ่มอีกรอบ</button>
+  </div>`;
+  document.getElementById('backdrop').classList.add('open');
+}
+
+setMode('delivery');
+boot();
+</script>
+</body>
+</html>

@@ -1,0 +1,23 @@
+import * as menuService from '../services/menu.service.js';
+import { asyncHandler } from '../utils/asyncHandler.js';
+
+export const categories = asyncHandler(async (_req, res) => res.json(await menuService.categories()));
+export const toppings   = asyncHandler(async (_req, res) => res.json(await menuService.toppings()));
+export const list       = asyncHandler(async (req, res)  => res.json(await menuService.list(req.query)));
+export const getById    = asyncHandler(async (req, res)  => res.json(await menuService.getById(req.params.id)));
+
+export const create = asyncHandler(async (req, res) => {
+  res.status(201).json(await menuService.create(req.body));
+});
+
+export const update = asyncHandler(async (req, res) => {
+  res.json(await menuService.update(req.params.id, req.body));
+});
+
+export const deactivate = asyncHandler(async (req, res) => {
+  res.json(await menuService.deactivate(req.params.id));
+});
+
+export const addVariant = asyncHandler(async (req, res) => {
+  res.status(201).json(await menuService.addVariant(req.params.id, req.body));
+});
