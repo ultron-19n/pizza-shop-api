@@ -23,35 +23,48 @@ function toId(value, label) {
 export async function priceItems(items, db) {
   const priced = [];
 
+  // ตรวจรูปแบบและรวบรวมรหัสทั้งหมดก่อน แล้วค่อยถามฐานข้อมูลครั้งเดียว
+  // เดิมออเดอร์ 5 รายการที่มีท็อปปิ้งอย่างละ 2 = 15 รอบไป-กลับ ตอนนี้เหลือ 2 รอบไม่ว่าจะยาวแค่ไหน
   for (const item of items) {
     // ข้อมูลมาจาก body ตรงๆ ต้องกันรูปแบบเพี้ยน (null, สตริง, ตัวเลขล้วน) ไม่งั้นกลายเป็น 500
     if (!item || typeof item !== 'object' || Array.isArray(item)) {
       throw ApiError.badRequest('รูปแบบรายการสินค้าไม่ถูกต้อง');
     }
+    if (item.toppings != null && !Array.isArray(item.toppings)) {
+      throw ApiError.badRequest('รูปแบบท็อปปิ้งไม่ถูกต้อง');
+    }
+    for (const t of item.toppings ?? []) {
+      if (!t || typeof t !== 'object') throw ApiError.badRequest('รูปแบบท็อปปิ้งไม่ถูกต้อง');
+    }
+  }
 
+  const variantIds = items.map(i => toId(i.pizza_variant_id, 'รหัสสินค้า'));
+  const toppingIds = items.flatMap(i => (i.toppings ?? []).map(t => toId(t.topping_id, 'รหัสท็อปปิ้ง')));
+
+  const variants = await menuRepo.findVariantsForPricing([...new Set(variantIds)], db);
+  const toppings = toppingIds.length
+    ? await menuRepo.findToppingsByIds([...new Set(toppingIds)], db)
+    : new Map();
+
+  for (const item of items) {
     const variantId = toId(item.pizza_variant_id, 'รหัสสินค้า');
-    const variant = await menuRepo.findVariantForPricing(variantId, db);
+    const variant = variants.get(variantId);
     if (!variant) throw ApiError.badRequest(`ไม่พบสินค้ารหัส ${variantId}`);
     // เมนูที่ปิดขาย (is_active = false) ต้องสั่งไม่ได้แม้รู้รหัส variant — หน้าเมนูแค่ซ่อน ไม่ได้กันที่ API
     if (!variant.is_available || !variant.is_active) throw ApiError.badRequest(`${variant.name} ไม่พร้อมขายในตอนนี้`);
 
     const quantity = normalizeQuantity(item.quantity);
     let unitSatang = toSatang(variant.price);
-    const toppings = [];
+    const chosen = [];
 
-    const requested = item.toppings ?? [];
-    if (!Array.isArray(requested)) throw ApiError.badRequest('รูปแบบท็อปปิ้งไม่ถูกต้อง');
-
-    for (const t of requested) {
-      if (!t || typeof t !== 'object') throw ApiError.badRequest('รูปแบบท็อปปิ้งไม่ถูกต้อง');
-
+    for (const t of item.toppings ?? []) {
       const toppingId = toId(t.topping_id, 'รหัสท็อปปิ้ง');
-      const topping = await menuRepo.findToppingById(toppingId, db);
+      const topping = toppings.get(toppingId);
       if (!topping) throw ApiError.badRequest(`ไม่พบท็อปปิ้งรหัส ${toppingId}`);
 
       const tQty = normalizeQuantity(t.quantity);
       unitSatang += toSatang(topping.price) * tQty;
-      toppings.push({ topping_id: topping.id, quantity: tQty, price: topping.price });
+      chosen.push({ topping_id: topping.id, quantity: tQty, price: topping.price });
     }
 
     priced.push({
@@ -61,7 +74,7 @@ export async function priceItems(items, db) {
       unit_satang: unitSatang,
       total_satang: unitSatang * quantity,
       note: item.note || null,
-      toppings,
+      toppings: chosen,
     });
   }
 

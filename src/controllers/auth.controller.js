@@ -13,3 +13,19 @@ export const login = asyncHandler(async (req, res) => {
 export const me = asyncHandler(async (req, res) => {
   res.json(await authService.me(req.user.id));
 });
+
+export const setupStatus = asyncHandler(async (_req, res) => {
+  res.json(await authService.needsSetup());
+});
+
+export const listUsers = asyncHandler(async (_req, res) => {
+  res.json(await authService.listUsers());
+});
+
+export const updateUser = asyncHandler(async (req, res) => {
+  res.json(await authService.updateUser(req.params.id, req.body, req.user));
+});
+
+export const resetPassword = asyncHandler(async (req, res) => {
+  res.json(await authService.resetPassword(req.params.id, req.body.password));
+});

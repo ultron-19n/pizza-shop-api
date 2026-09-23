@@ -55,18 +55,18 @@ export async function createOrder(input, actorId = null) {
       note: note || null,
     }, db);
 
-    // 5. บันทึกรายการสินค้าและท็อปปิ้ง
-    for (const item of pricedItems) {
-      const orderItemId = await orderRepo.insertOrderItem(order.id, {
-        ...item,
-        unit_price: toDecimal(toBaht(item.unit_satang)),
-        total_price: toDecimal(toBaht(item.total_satang)),
-      }, db);
+    // 5. บันทึกรายการสินค้าและท็อปปิ้ง — รวมเป็น 2 คำสั่งไม่ว่าออเดอร์จะยาวแค่ไหน
+    const itemIds = await orderRepo.insertOrderItems(order.id, pricedItems.map(item => ({
+      ...item,
+      unit_price: toDecimal(toBaht(item.unit_satang)),
+      total_price: toDecimal(toBaht(item.total_satang)),
+    })), db);
 
-      for (const topping of item.toppings) {
-        await orderRepo.insertOrderItemTopping(orderItemId, topping, db);
-      }
-    }
+    await orderRepo.insertOrderItemToppings(
+      pricedItems.flatMap((item, i) =>
+        item.toppings.map(t => ({ ...t, order_item_id: itemIds[i] }))),
+      db
+    );
 
     // 6. ตัดสต๊อกตามสูตร
     await inventory.deductForOrder({ items: pricedItems, orderId: order.id, userId: actorId }, db);
@@ -87,23 +87,17 @@ export async function createOrder(input, actorId = null) {
 const MAX_CODE_ATTEMPTS = 10;
 
 /**
- * บันทึกหัวออเดอร์ ถ้ารหัสชนกับของเดิม (unique violation ที่ order_code) ให้สุ่มรหัสใหม่แล้วลองอีก
- * ใช้ SAVEPOINT เพราะใน PostgreSQL error ทำให้ทั้ง transaction พัง ต้อง rollback เฉพาะคำสั่งนี้ก่อนลองใหม่
- * (ต้องเรียกภายใน transaction เท่านั้น)
+ * บันทึกหัวออเดอร์ ถ้ารหัสชนกับของเดิมให้สุ่มรหัสใหม่แล้วลองอีก
+ *
+ * ใช้ ON CONFLICT DO NOTHING แทนการดัก error: รหัสชนแล้วจะไม่มีแถวคืนมา ไม่ใช่ error
+ * จึงไม่ต้องกาง SAVEPOINT ประกบทุกครั้งเพื่อกัน transaction พัง (ประหยัด 2 รอบคุยกับฐานข้อมูลต่อออเดอร์)
  */
 async function insertOrderWithUniqueCode(order, db) {
-  for (let attempt = 1; ; attempt++) {
-    await db.query('SAVEPOINT order_code_try');
-    try {
-      const inserted = await orderRepo.insertOrder({ ...order, order_code: generateOrderCode() }, db);
-      await db.query('RELEASE SAVEPOINT order_code_try');
-      return inserted;
-    } catch (err) {
-      await db.query('ROLLBACK TO SAVEPOINT order_code_try');
-      const isCodeClash = err.code === '23505' && String(err.constraint || '').includes('order_code');
-      if (!isCodeClash || attempt >= MAX_CODE_ATTEMPTS) throw err;
-    }
+  for (let attempt = 1; attempt <= MAX_CODE_ATTEMPTS; attempt++) {
+    const inserted = await orderRepo.insertOrder({ ...order, order_code: generateOrderCode() }, db);
+    if (inserted) return inserted;
   }
+  throw ApiError.internal('สร้างรหัสออเดอร์ไม่สำเร็จ กรุณาลองใหม่');
 }
 
 const clip = (v, max) => String(v ?? '').trim().slice(0, max);
@@ -131,10 +125,16 @@ async function resolveCustomer(input, isStaff, db) {
   } else if (customer && typeof customer === 'object') {
     const phone = clip(customer.phone_number, 20);
     if (phone.length < 9) throw ApiError.badRequest('กรุณากรอกเบอร์โทรให้ถูกต้อง');
+    const email = clip(customer.email, 150).toLowerCase();
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      throw ApiError.badRequest('รูปแบบอีเมลไม่ถูกต้อง');
+    }
+
     ({ id: customerId } = await customerRepo.findOrCreateByPhone({
       first_name: clip(customer.first_name, 100) || 'ลูกค้า',
       last_name: clip(customer.last_name, 100),
       phone_number: phone,
+      email: email || null,
     }, db));
   }
 
@@ -177,20 +177,30 @@ export async function changeStatus(orderId, nextStatus, actorId = null) {
       );
     }
 
-    // ยกเลิกแล้วต้องคืนวัตถุดิบเข้าคลัง และดึงแต้มที่ให้ไปตอนสั่งกลับคืน
+    // ยกเลิกแล้วต้องคืนวัตถุดิบเข้าคลัง ดึงแต้มที่ให้ไปตอนสั่งกลับคืน และตีกลับรายการชำระเงิน
     if (nextStatus === ORDER_STATUS.CANCELLED) {
       const items = await orderRepo.findItemsForRestock(orderId, db);
       await inventory.returnForOrder({ items, orderId, userId: actorId }, db);
 
       const points = pricing.calcLoyaltyPoints(toSatang(current.total_amount));
       await customerRepo.removePoints(current.customer_id, points, db);
+
+      // ถ้าเก็บเงินไปแล้ว ต้องทำเครื่องหมายว่าคืนเงิน ไม่งั้นรายงานยอดขายจะยังนับเงินก้อนนี้อยู่
+      // (เงินสดคืนหน้าร้าน ส่วนช่องทางอื่นต้องไปกดคืนในระบบของผู้ให้บริการเอง)
+      await orderRepo.markRefunded(orderId, db);
     }
 
     return orderRepo.updateStatus(orderId, nextStatus, db);
   });
 }
 
-export async function pay(orderId, { method = 'cash', transaction_ref = null }) {
+/**
+ * รับชำระเงิน
+ *
+ * เงินทอนคำนวณที่นี่เสมอ ไม่รับค่าจากหน้าจอ — หน้าจอคิดไว้ให้พนักงานเห็นล่วงหน้าได้
+ * แต่ตัวเลขที่บันทึกลงบิลต้องมาจากเซิร์ฟเวอร์ที่รู้ยอดจริงของออเดอร์
+ */
+export async function pay(orderId, { method = 'cash', transaction_ref = null, received_amount = null }) {
   return withTransaction(async (db) => {
     const order = await orderRepo.findOrderStatus(orderId, db);
     if (!order) throw ApiError.notFound('ไม่พบออเดอร์');
@@ -202,11 +212,37 @@ export async function pay(orderId, { method = 'cash', transaction_ref = null }) 
     if (!existing) throw ApiError.notFound('ไม่พบรายการชำระเงินของออเดอร์นี้');
     if (existing.status === 'paid') throw ApiError.conflict('ออเดอร์นี้ชำระเงินแล้ว');
 
-    return orderRepo.markPaid(orderId, { method, transaction_ref }, db);
+    // payments.transaction_ref เป็น VARCHAR(100) — ตัดไว้ก่อน ไม่งั้นข้อความยาวจะทำให้ทั้ง transaction พัง
+    const ref = clip(transaction_ref, 100) || null;
+
+    // เงินสด: ถ้าพนักงานกรอกเงินที่รับมา ต้องพอจ่ายและคำนวณเงินทอนให้
+    let received = null;
+    let change = null;
+    if (received_amount !== null && received_amount !== '') {
+      const receivedSatang = toSatang(received_amount);
+      const dueSatang = toSatang(existing.amount);
+
+      if (!Number.isFinite(receivedSatang) || receivedSatang < 0) {
+        throw ApiError.badRequest('จำนวนเงินที่รับมาไม่ถูกต้อง');
+      }
+      if (receivedSatang < dueSatang) {
+        throw ApiError.badRequest(
+          `เงินที่รับมา ${toBaht(receivedSatang)} บาท น้อยกว่ายอดที่ต้องชำระ ${toBaht(dueSatang)} บาท`
+        );
+      }
+      received = toDecimal(toBaht(receivedSatang));
+      change = toDecimal(toBaht(receivedSatang - dueSatang));
+    }
+
+    return orderRepo.markPaid(orderId, {
+      method, transaction_ref: ref, received_amount: received, change_amount: change,
+    }, db);
   });
 }
 
-export const list = (filters) => orderRepo.findOrders(filters);
+/** detail = true: ส่งรายการสินค้า ลูกค้า และการชำระเงินมาด้วยในคำขอเดียว (หน้าคิวหลังร้านใช้แบบนี้) */
+export const list = ({ detail = false, ...filters }) =>
+  detail ? orderRepo.findOrdersWithDetail(filters) : orderRepo.findOrders(filters);
 
 export async function getDetail(orderId) {
   const order = await orderRepo.findOrderDetail(orderId);
@@ -214,12 +250,19 @@ export async function getDetail(orderId) {
   return order;
 }
 
-export async function summary() {
-  const [daily, best_sellers] = await Promise.all([
+export async function summary({ date = null } = {}) {
+  const [daily, best_sellers, by_method] = await Promise.all([
     orderRepo.dailySales(30),
     orderRepo.bestSellers(10),
+    orderRepo.paymentsByMethod(date),
   ]);
-  return { daily, best_sellers };
+
+  // เงินสดที่ควรมีในลิ้นชัก = ยอดของบิลที่จ่ายด้วยเงินสด
+  // (ไม่ใช้ "เงินที่รับมา ลบ เงินทอน" เพราะได้ค่าเท่ากันอยู่แล้ว แต่บิลที่พนักงานไม่ได้กรอกเงินที่รับมาจะหายไป)
+  const cash = by_method.find(m => m.method === 'cash');
+  const cash_in_drawer = toDecimal(Number(cash?.amount || 0));
+
+  return { daily, best_sellers, by_method, cash_in_drawer };
 }
 
 async function findValidPromotion(code, db) {

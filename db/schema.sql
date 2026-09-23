@@ -6,6 +6,7 @@
 CREATE TABLE IF NOT EXISTS users (
   id SERIAL PRIMARY KEY,
   username VARCHAR(100) NOT NULL UNIQUE,
+  email VARCHAR(150) UNIQUE,             -- ใช้แทนชื่อผู้ใช้ตอนเข้าสู่ระบบได้
   password_hash TEXT NOT NULL,
   first_name VARCHAR(100),
   last_name VARCHAR(100),
@@ -155,7 +156,9 @@ CREATE TABLE IF NOT EXISTS payments (
   method VARCHAR(20),       -- cash | promptpay | card | transfer
   amount NUMERIC(10,2) NOT NULL,
   status VARCHAR(20) DEFAULT 'unpaid',  -- unpaid | paid | refunded
-  transaction_ref VARCHAR(100),
+  transaction_ref VARCHAR(100),         -- เลขอ้างอิงสลิป / 4 ตัวท้ายบัตร
+  received_amount NUMERIC(10,2),        -- เงินสดที่รับมาจากลูกค้า (ไว้ตรวจลิ้นชักตอนปิดกะ)
+  change_amount NUMERIC(10,2),          -- เงินทอน
   paid_at TIMESTAMP
 );
 
@@ -183,6 +186,12 @@ CREATE INDEX IF NOT EXISTS idx_orders_customer   ON orders(customer_id);
 CREATE INDEX IF NOT EXISTS idx_orders_status     ON orders(status);
 CREATE INDEX IF NOT EXISTS idx_orders_created    ON orders(created_at);
 CREATE INDEX IF NOT EXISTS idx_order_items_order ON order_items(order_id);
+-- ดึงใบเสร็จ 1 ใบต้องตามหาท็อปปิ้งและรายการชำระเงินของออเดอร์นั้น ถ้าไม่มีดัชนีจะไล่อ่านทั้งตาราง
+CREATE INDEX IF NOT EXISTS idx_oit_item        ON order_item_toppings(order_item_id);
+CREATE INDEX IF NOT EXISTS idx_payments_order  ON payments(order_id);
+CREATE INDEX IF NOT EXISTS idx_invlogs_order   ON inventory_logs(reference_order_id);
+-- หน้าคิวกรองตามสถานะแล้วเรียงตามเวลาเสมอ ดัชนีคู่นี้ตอบได้ในทีเดียว
+CREATE INDEX IF NOT EXISTS idx_orders_status_created ON orders(status, created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_variants_menu     ON pizza_variants(menu_item_id);
 CREATE INDEX IF NOT EXISTS idx_recipes_variant   ON pizza_recipes(pizza_variant_id);
 

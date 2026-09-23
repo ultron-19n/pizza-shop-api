@@ -9,6 +9,7 @@ PRAGMA foreign_keys = ON;
 CREATE TABLE IF NOT EXISTS users (
   id            INTEGER PRIMARY KEY AUTOINCREMENT,
   username      TEXT NOT NULL UNIQUE,
+  email         TEXT UNIQUE,
   password_hash TEXT NOT NULL,
   first_name    TEXT,
   last_name     TEXT,

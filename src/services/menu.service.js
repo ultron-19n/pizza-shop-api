@@ -32,3 +32,25 @@ export async function addVariant(menuItemId, data) {
   await getById(menuItemId);
   return menuRepo.insertVariant(menuItemId, data);
 }
+
+/** รายการเมนูสำหรับหลังร้าน — รวมเมนูที่ปิดขายอยู่ */
+export const listForManage = () => menuRepo.findMenuForManage();
+
+export async function updateVariant(id, patch) {
+  if (patch.price !== undefined && !(Number(patch.price) >= 0)) {
+    throw ApiError.badRequest('ราคาต้องเป็นตัวเลขไม่ติดลบ');
+  }
+  const updated = await menuRepo.updateVariant(id, patch);
+  if (!updated) throw ApiError.notFound('ไม่พบขนาด/ตัวเลือกนี้');
+  return updated;
+}
+
+export const allToppings = () => menuRepo.findAllToppings();
+
+export const createTopping = (data) => menuRepo.insertTopping(data);
+
+export async function updateTopping(id, patch) {
+  const updated = await menuRepo.updateTopping(id, patch);
+  if (!updated) throw ApiError.notFound('ไม่พบท็อปปิ้งนี้');
+  return updated;
+}

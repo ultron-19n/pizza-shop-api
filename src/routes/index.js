@@ -7,6 +7,7 @@ import menuRoutes from './menu.routes.js';
 import customerRoutes from './customer.routes.js';
 import orderRoutes from './order.routes.js';
 import ingredientRoutes from './ingredient.routes.js';
+import promotionRoutes from './promotion.routes.js';
 
 const router = Router();
 
@@ -20,5 +21,6 @@ router.use('/menu', menuRoutes);
 router.use('/customers', customerRoutes);
 router.use('/orders', orderRoutes);
 router.use('/ingredients', ingredientRoutes);
+router.use('/promotions', promotionRoutes);
 
 export default router;

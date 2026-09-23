@@ -21,3 +21,18 @@ export const deactivate = asyncHandler(async (req, res) => {
 export const addVariant = asyncHandler(async (req, res) => {
   res.status(201).json(await menuService.addVariant(req.params.id, req.body));
 });
+
+export const listForManage = asyncHandler(async (_req, res) => res.json(await menuService.listForManage()));
+export const allToppings   = asyncHandler(async (_req, res) => res.json(await menuService.allToppings()));
+
+export const updateVariant = asyncHandler(async (req, res) => {
+  res.json(await menuService.updateVariant(req.params.id, req.body));
+});
+
+export const createTopping = asyncHandler(async (req, res) => {
+  res.status(201).json(await menuService.createTopping(req.body));
+});
+
+export const updateTopping = asyncHandler(async (req, res) => {
+  res.json(await menuService.updateTopping(req.params.id, req.body));
+});

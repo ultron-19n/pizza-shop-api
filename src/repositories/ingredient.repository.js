@@ -49,6 +49,62 @@ export const findById = async (id, db = pool) => {
   return rows[0] || null;
 };
 
+/**
+ * ปรับสต๊อกหลายวัตถุดิบในคำสั่งเดียว
+ *
+ * CTE ตัวแรกล็อกแถวโดยเรียงตาม id ก่อนเสมอ ทำให้ทุกออเดอร์ล็อกในลำดับเดียวกัน จึงไม่เกิด deadlock
+ * (เหมือนกับตอนที่วนตัดทีละตัวเรียงตาม id แต่ยิงคำสั่งเดียวแทน n คำสั่ง)
+ *
+ * guard = true (ตอนขาย): ตัดเฉพาะแถวที่ของพอ แถวไหนไม่พอจะไม่ถูกแตะและไม่ถูกคืนกลับมาใน RETURNING
+ * ผู้เรียกจึงรู้ได้จากจำนวนแถวที่คืนมาว่ามีตัวไหนของไม่พอ
+ */
+export const applyStockBatch = async (changes, { guard = false } = {}, db = pool) => {
+  if (!changes.length) return [];
+
+  const ids = changes.map(c => c.ingredientId);
+  const values = [];
+  const rows = changes.map(({ ingredientId, delta }, i) => {
+    const b = i * 2;
+    values.push(ingredientId, delta);
+    return i === 0 ? `($${b + 1}::int, $${b + 2}::numeric)` : `($${b + 1}, $${b + 2})`;
+  });
+  values.push(ids);
+
+  const { rows: updated } = await db.query(
+    `WITH locked AS (
+       SELECT id FROM ingredients WHERE id = ANY($${values.length}::int[]) ORDER BY id FOR UPDATE
+     )
+     UPDATE ingredients i
+        SET stock_quantity = i.stock_quantity + v.delta
+       FROM (VALUES ${rows.join(',')}) AS v(id, delta)
+      WHERE i.id = v.id
+        AND i.id IN (SELECT id FROM locked)
+        ${guard ? 'AND i.stock_quantity + v.delta >= 0' : ''}
+      RETURNING i.id, i.name, i.stock_quantity`,
+    values
+  );
+  return updated;
+};
+
+/** เขียน log หลายรายการในคำสั่งเดียว — ใช้ตอนตัด/คืนสต๊อกทั้งออเดอร์ */
+export const insertLogs = async (logs, db = pool) => {
+  if (!logs.length) return;
+
+  const values = [];
+  const rows = logs.map((log, i) => {
+    const b = i * 6;
+    values.push(log.ingredient_id, log.change_quantity, log.type,
+                log.reference_order_id, log.user_id, log.note);
+    return `($${b + 1}, $${b + 2}, $${b + 3}, $${b + 4}, $${b + 5}, $${b + 6})`;
+  });
+
+  await db.query(
+    `INSERT INTO inventory_logs (ingredient_id, change_quantity, type, reference_order_id, user_id, note)
+     VALUES ${rows.join(',')}`,
+    values
+  );
+};
+
 export const insertLog = async (log, db = pool) => {
   await db.query(
     `INSERT INTO inventory_logs (ingredient_id, change_quantity, type, reference_order_id, user_id, note)

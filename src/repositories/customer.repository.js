@@ -43,13 +43,14 @@ export const upsertByPhone = async ({ first_name, last_name, phone_number, email
  * ถ้าเบอร์ซ้ำจะ "ไม่แก้ชื่อ/อีเมลเดิม" (ต่างจาก upsertByPhone ที่ทับข้อมูล) เพื่อกันคนอื่นแก้ข้อมูลลูกค้าด้วยเบอร์
  * DO UPDATE แบบไม่เปลี่ยนค่า ทำเพื่อให้ RETURNING คืนแถวเดิมกลับมา
  */
-export const findOrCreateByPhone = async ({ first_name, last_name, phone_number }, db = pool) => {
+export const findOrCreateByPhone = async ({ first_name, last_name, phone_number, email }, db = pool) => {
   const { rows } = await db.query(
-    `INSERT INTO customers (first_name, last_name, phone_number)
-     VALUES ($1, $2, $3)
-     ON CONFLICT (phone_number) DO UPDATE SET phone_number = EXCLUDED.phone_number
+    `INSERT INTO customers (first_name, last_name, phone_number, email)
+     VALUES ($1, $2, $3, $4)
+     ON CONFLICT (phone_number) DO UPDATE
+       SET email = COALESCE(customers.email, EXCLUDED.email)   -- เติมอีเมลให้ลูกค้าเดิมที่ยังไม่เคยให้ไว้ แต่ไม่ทับของเดิม
      RETURNING id`,
-    [first_name, last_name, phone_number]
+    [first_name, last_name, phone_number, email]
   );
   return rows[0];
 };

@@ -11,6 +11,8 @@ export const list = asyncHandler(async (req, res) => {
     status: req.query.status || null,
     date: req.query.date || null,
     customerId: req.query.customer_id || null,
+    detail: req.query.detail === '1' || req.query.detail === 'true',
+    limit: Math.min(Number(req.query.limit) || 30, 200),
   }));
 });
 
@@ -30,6 +32,6 @@ export const checkPromotion = asyncHandler(async (req, res) => {
   res.json(await orderService.checkPromotion(req.params.code));
 });
 
-export const summary = asyncHandler(async (_req, res) => {
-  res.json(await orderService.summary());
+export const summary = asyncHandler(async (req, res) => {
+  res.json(await orderService.summary({ date: req.query.date || null }));
 });
