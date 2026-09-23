@@ -81,6 +81,8 @@ main{max-width:1080px;margin:0 auto;padding:22px 20px 80px}
 .o-act .pay{border-color:var(--basil);color:var(--basil)}
 .o-act .cancel{border-color:var(--tomato);color:var(--tomato)}
 .paid{font-size:13px;color:var(--basil);align-self:center}
+.danger{color:var(--tomato) !important;border-color:#E8AAAE !important}
+.danger:hover{background:#FDE7E9 !important}
 .notified{font-size:12.5px;color:#8A6D00;background:#FFF4CE;border:1px solid #F2D98C;border-radius:2px;padding:4px 9px;align-self:center}
 
 /* table */
@@ -495,6 +497,23 @@ document.addEventListener('keydown', e => {
   if(e.key === 'Enter' && e.target.tagName === 'INPUT') fSave.click();
 });
 
+
+/* ---------- ลบข้อมูล ---------- */
+/**
+ * ถามยืนยันก่อนลบเสมอ แล้วค่อยยิงไปที่เซิร์ฟเวอร์
+ * ถ้าของชิ้นนั้นเคยถูกใช้ในออเดอร์ เซิร์ฟเวอร์จะปฏิเสธพร้อมบอกเหตุผลและทางเลือกที่ควรทำแทน
+ */
+async function removeThing({ path, label, warn, reload }){
+  if(!confirm(`ลบ ${label} ?\n\n${warn}\nการลบนี้ย้อนกลับไม่ได้`)) return;
+  try{
+    const r = await api(path, { method:'DELETE' });
+    reload();
+    alert(r.message || 'ลบเรียบร้อย');
+  }catch(err){
+    alert('ลบไม่ได้\n\n' + err.message);
+  }
+}
+
 /* ---------- เมนู ---------- */
 async function loadMenu(){
   try{
@@ -509,6 +528,7 @@ async function loadMenu(){
       <td>${t.is_available ? '<span class="tag ok">ขายอยู่</span>' : '<span class="tag no">ปิดอยู่</span>'}</td>
       <td style="text-align:right">
         <button class="mini" data-top-edit="${esc(t.id)}">แก้ไข</button>
+        <button class="mini danger" data-top-del="${esc(t.id)}" data-name="${esc(t.name)}">ลบ</button>
         <button class="mini" data-top-toggle="${esc(t.id)}" data-to="${t.is_available ? 'false' : 'true'}">
           ${t.is_available ? 'ปิดขาย' : 'เปิดขาย'}</button>
       </td></tr>`).join('') : '<tr><td colspan="4" class="empty">ยังไม่มีท็อปปิ้ง</td></tr>';
@@ -523,6 +543,7 @@ function menuCard(m){
       ${m.is_active ? '' : '<span class="tag no">ปิดขาย</span>'}
       <span class="acts">
         <button data-item-edit="${esc(m.id)}">แก้ไข</button>
+        <button class="danger" data-item-del="${esc(m.id)}" data-name="${esc(m.name)}">ลบ</button>
         <button data-variant-add="${esc(m.id)}">+ ขนาด</button>
         <button data-item-toggle="${esc(m.id)}" data-to="${m.is_active ? 'false' : 'true'}">
           ${m.is_active ? 'ปิดขาย' : 'เปิดขาย'}</button>
@@ -588,6 +609,14 @@ menuList.onclick = async e => {
         save: async v => { await api(`/menu/${d.variantAdd}/variants`, { method:'POST', body: JSON.stringify(v) }); loadMenu(); },
       });
     }
+    if(d.itemDel) return removeThing({
+      path: '/menu/items/' + d.itemDel + '/permanent', label: `เมนู "${d.name}"`,
+      warn: 'ขนาดและราคาทั้งหมดของเมนูนี้จะถูกลบไปด้วย', reload: loadMenu });
+
+    if(d.variantDel) return removeThing({
+      path: '/menu/variants/' + d.variantDel, label: 'ขนาดนี้',
+      warn: 'ลบเฉพาะขนาด/ราคานี้ เมนูยังอยู่', reload: loadMenu });
+
     if(d.itemEdit){
       const m = await api('/menu/' + d.itemEdit);
       return openForm({
@@ -612,6 +641,10 @@ topBody.onclick = async e => {
       await api('/menu/toppings/' + d.topToggle, { method:'PATCH', body: JSON.stringify({ is_available: d.to === 'true' }) });
       return loadMenu();
     }
+    if(d.topDel) return removeThing({
+      path: '/menu/toppings/' + d.topDel, label: `ท็อปปิ้ง "${d.name}"`,
+      warn: 'ลูกค้าจะเลือกท็อปปิ้งนี้ไม่ได้อีก', reload: loadMenu });
+
     if(d.topEdit){
       const row = b.closest('tr');
       return openForm({
@@ -651,6 +684,7 @@ async function loadPromos(){
         <td>${p.is_active ? '<span class="tag ok">เปิดใช้</span>' : '<span class="tag no">ปิดอยู่</span>'}</td>
         <td style="text-align:right">
           <button class="mini" data-promo-edit="${esc(p.id)}">แก้ไข</button>
+          <button class="mini danger" data-promo-del="${esc(p.id)}" data-name="${esc(p.code)}">ลบ</button>
           <button class="mini" data-promo-toggle="${esc(p.id)}" data-to="${p.is_active ? 'false' : 'true'}">
             ${p.is_active ? 'ปิด' : 'เปิด'}</button>
         </td></tr>`;
@@ -672,6 +706,10 @@ promoBody.onclick = async e => {
       await api('/promotions/' + d.promoToggle, { method:'PUT', body: JSON.stringify({ is_active: d.to === 'true' }) });
       return loadPromos();
     }
+    if(d.promoDel) return removeThing({
+      path: '/promotions/' + d.promoDel, label: `โค้ด ${d.name}`,
+      warn: 'ลูกค้าจะใช้โค้ดนี้ไม่ได้อีก', reload: loadPromos });
+
     if(d.promoEdit){
       const p = (await api('/promotions')).find(x => String(x.id) === d.promoEdit);
       return openForm({
@@ -697,6 +735,7 @@ async function loadStaff(){
       <td style="text-align:right">
         <button class="mini" data-user-edit="${esc(u.id)}" data-role="${esc(u.role)}" data-email="${esc(u.email || '')}">แก้ไข</button>
         <button class="mini" data-user-pw="${esc(u.id)}">ตั้งรหัสใหม่</button>
+        <button class="mini danger" data-user-del="${esc(u.id)}" data-name="${esc(u.username)}">ลบ</button>
         <button class="mini" data-user-status="${esc(u.id)}" data-to="${u.status === 'active' ? 'inactive' : 'active'}">
           ${u.status === 'active' ? 'ระงับ' : 'เปิดใช้'}</button>
       </td></tr>`).join('');
@@ -725,6 +764,10 @@ staffBody.onclick = async e => {
       await api('/auth/users/' + d.userStatus, { method:'PATCH', body: JSON.stringify({ status: d.to }) });
       return loadStaff();
     }
+    if(d.userDel) return removeThing({
+      path: '/auth/users/' + d.userDel, label: `บัญชี ${d.name}`,
+      warn: 'บัญชีนี้จะเข้าระบบไม่ได้อีกและหายจากรายชื่อถาวร', reload: loadStaff });
+
     if(d.userEdit){
       return openForm({
         title: 'แก้ไขบัญชีพนักงาน',
@@ -789,6 +832,7 @@ function card(o){
           : ''}
       ${step ? `<button class="next" data-next="${esc(o.id)}" data-to="${esc(step.to)}">${esc(step.label)}</button>` : ''}
       ${['pending','preparing'].includes(o.status) ? `<button class="cancel" data-cancel="${esc(o.id)}">ยกเลิก</button>` : ''}
+      ${o.status === 'cancelled' && role === 'admin' ? `<button class="cancel" data-order-del="${esc(o.id)}" data-name="${esc(o.order_code)}">ลบบิลนี้</button>` : ''}
     </div>
   </article>`;
 }
@@ -801,6 +845,9 @@ orderList.onclick = async e => {
                            await api(`/orders/${b.dataset.cancel}/status`, { method:'PATCH', body: JSON.stringify({ status:'cancelled' }) }); }
     if(b.dataset.pay)    return openPay(loaded.get(b.dataset.pay));
     if(b.dataset.print)  return printReceipt(loaded.get(b.dataset.print));
+    if(b.dataset.orderDel) return removeThing({
+      path: '/orders/' + b.dataset.orderDel, label: `บิล ${b.dataset.name}`,
+      warn: 'บิลที่ยกเลิกแล้วจะหายไปจากระบบถาวร', reload: loadOrders });
     loadOrders();
   }catch(err){ alert(err.message); }
 };
@@ -1025,12 +1072,18 @@ async function loadStock(){
     <td class="num ${r.is_low ? 'low' : ''}">${Number(r.stock_quantity).toFixed(2)}</td>
     <td class="num">${Number(r.min_required_quantity).toFixed(2)}</td>
     <td>${esc(r.unit)}</td>
-    <td><button class="restock" data-id="${esc(r.id)}" data-name="${esc(r.name)}">รับของเข้า</button></td>
+    <td><button class="restock" data-id="${esc(r.id)}" data-name="${esc(r.name)}">รับของเข้า</button>
+        <button class="restock danger" data-ing-del="${esc(r.id)}" data-name="${esc(r.name)}">ลบ</button></td>
   </tr>`).join('');
 }
 
 stockBody.onclick = async e => {
   const b = e.target.closest('.restock'); if(!b) return;
+
+  if(b.dataset.ingDel) return removeThing({
+    path: '/ingredients/' + b.dataset.ingDel, label: `วัตถุดิบ "${b.dataset.name}"`,
+    warn: 'ลบได้เฉพาะวัตถุดิบที่ยังไม่อยู่ในสูตรและไม่มีประวัติเข้า-ออก', reload: loadStock });
+
   const qty = prompt(`รับ ${b.dataset.name} เข้าคลังกี่หน่วย?`);
   if(!qty) return;
   try{

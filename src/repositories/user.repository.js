@@ -79,3 +79,19 @@ export const insertUser = async (user, db = pool) => {
   );
   return rows[0];
 };
+
+/** บัญชีนี้ผูกกับงานอะไรไว้บ้าง — ถ้ามี ต้องระงับแทนการลบ ไม่งั้นประวัติจะขาดคนรับผิดชอบ */
+export const countUsage = async (id, db = pool) => {
+  const { rows } = await db.query(
+    `SELECT (SELECT COUNT(*)::int FROM orders         WHERE user_id  = $1) AS orders,
+            (SELECT COUNT(*)::int FROM inventory_logs WHERE user_id  = $1) AS stock_logs,
+            (SELECT COUNT(*)::int FROM deliveries     WHERE rider_id = $1) AS deliveries`,
+    [id]
+  );
+  return rows[0];
+};
+
+export const remove = async (id, db = pool) => {
+  const { rows } = await db.query('DELETE FROM users WHERE id = $1 RETURNING id, username', [id]);
+  return rows[0] || null;
+};

@@ -24,5 +24,6 @@ router.get('/:id/logs',  controller.logs);
 
 router.post('/', requireRole(...MANAGEMENT_ROLES), validate(ingredientSchema), controller.create);
 router.post('/:id/restock', validate(restockSchema), controller.restock);
+router.delete('/:id', requireRole(...MANAGEMENT_ROLES), controller.remove);   // ลบได้เฉพาะตัวที่ยังไม่ถูกใช้งาน
 
 export default router;

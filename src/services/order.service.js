@@ -297,6 +297,25 @@ export async function notifyTransfer(orderCode, { reference = null } = {}) {
   };
 }
 
+/**
+ * ลบบิลถาวร — ได้เฉพาะบิลที่ยกเลิกแล้วเท่านั้น
+ * บิลที่ขายจริงห้ามลบ เพราะยอดขายกับสต๊อกต้องตรวจย้อนหลังได้เสมอ
+ * (บิลที่ยกเลิกคืนวัตถุดิบและดึงแต้มกลับไปแล้วตั้งแต่ตอนกดยกเลิก การลบจึงไม่กระทบตัวเลขอื่น)
+ */
+export async function remove(orderId) {
+  const order = await orderRepo.findOrderStatus(orderId);
+  if (!order) throw ApiError.notFound('ไม่พบออเดอร์');
+
+  if (order.status !== ORDER_STATUS.CANCELLED) {
+    throw ApiError.conflict(
+      'ลบได้เฉพาะบิลที่ยกเลิกแล้วเท่านั้น บิลที่ขายจริงต้องเก็บไว้เพื่อให้ยอดขายตรวจย้อนหลังได้'
+    );
+  }
+
+  const deleted = await orderRepo.removeOrder(orderId);
+  return { message: `ลบบิล ${deleted.order_code} เรียบร้อย` };
+}
+
 export async function checkPromotion(code) {
   const p = await findValidPromotion(code);
   return {

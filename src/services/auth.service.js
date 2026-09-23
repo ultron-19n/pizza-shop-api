@@ -91,6 +91,36 @@ export async function updateUser(id, patch, actor) {
   return userRepo.updateUser(id, patch);
 }
 
+/**
+ * ลบบัญชีพนักงานถาวร (เฉพาะ admin)
+ * บัญชีที่เคยรับออเดอร์หรือแตะสต๊อกไปแล้วลบไม่ได้ ไม่งั้นประวัติจะไม่รู้ว่าใครเป็นคนทำ
+ */
+export async function removeUser(id, actor) {
+  const target = await userRepo.findById(id);
+  if (!target) throw ApiError.notFound('ไม่พบบัญชีนี้');
+
+  if (String(actor.id) === String(target.id)) throw ApiError.badRequest('ลบบัญชีตัวเองไม่ได้');
+  if (target.role === ROLES.ADMIN && (await userRepo.countActiveAdmins()) <= 1) {
+    throw ApiError.badRequest('ต้องเหลือผู้ดูแลระบบที่ใช้งานอยู่อย่างน้อย 1 บัญชี');
+  }
+
+  const used = await userRepo.countUsage(id);
+  const total = used.orders + used.stock_logs + used.deliveries;
+  if (total > 0) {
+    const parts = [];
+    if (used.orders)     parts.push(`รับออเดอร์ ${used.orders} ใบ`);
+    if (used.stock_logs) parts.push(`แก้สต๊อก ${used.stock_logs} ครั้ง`);
+    if (used.deliveries) parts.push(`ส่งของ ${used.deliveries} ครั้ง`);
+    throw ApiError.conflict(
+      `บัญชีนี้มีประวัติการทำงานอยู่ (${parts.join(', ')}) จึงลบถาวรไม่ได้ ` +
+      'ให้กด "ระงับ" แทน บัญชีจะเข้าระบบไม่ได้อีกแต่ประวัติยังครบ'
+    );
+  }
+
+  const deleted = await userRepo.remove(id);
+  return { message: `ลบบัญชี ${deleted.username} เรียบร้อย` };
+}
+
 /** ตั้งรหัสผ่านใหม่ให้พนักงาน — ใช้ตอนลืมรหัส */
 export async function resetPassword(id, password) {
   const target = await userRepo.findById(id);

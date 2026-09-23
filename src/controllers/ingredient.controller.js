@@ -18,3 +18,5 @@ export const restock = asyncHandler(async (req, res) => {
   });
   res.json(updated);
 });
+
+export const remove = asyncHandler(async (req, res) => res.json(await inventory.remove(req.params.id)));

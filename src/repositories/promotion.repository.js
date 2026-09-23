@@ -57,3 +57,15 @@ export const update = async (id, patch, db = pool) => {
   );
   return rows[0] || null;
 };
+
+/** เคยถูกใช้กับออเดอร์ไหนบ้าง — ใช้ตัดสินว่าลบถาวรได้ไหม */
+export const countUsage = async (id, db = pool) => {
+  const { rows } = await db.query(
+    'SELECT COUNT(*)::int AS n FROM orders WHERE promotion_id = $1', [id]);
+  return rows[0].n;
+};
+
+export const remove = async (id, db = pool) => {
+  const { rows } = await db.query('DELETE FROM promotions WHERE id = $1 RETURNING id, code', [id]);
+  return rows[0] || null;
+};

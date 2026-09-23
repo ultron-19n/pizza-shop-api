@@ -44,5 +44,6 @@ const admin = [authRequired, requireRole(ROLES.ADMIN)];
 router.get('/users',                   ...admin, controller.listUsers);
 router.patch('/users/:id',             ...admin, validate(updateUserSchema), controller.updateUser);
 router.post('/users/:id/password',     ...admin, validate(passwordSchema),   controller.resetPassword);
+router.delete('/users/:id',            ...admin, controller.removeUser);   // ลบได้เฉพาะบัญชีที่ยังไม่มีประวัติทำงาน
 
 export default router;

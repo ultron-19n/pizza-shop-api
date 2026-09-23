@@ -19,6 +19,7 @@ router.get('/usable', controller.usable);
 
 router.get('/',     ...manager, controller.list);
 router.post('/',    ...manager, validate(createSchema), controller.create);
-router.put('/:id',  ...manager, controller.update);
+router.put('/:id',    ...manager, controller.update);
+router.delete('/:id', ...manager, controller.remove);   // ลบได้เฉพาะโค้ดที่ยังไม่เคยถูกใช้
 
 export default router;

@@ -45,3 +45,20 @@ function clean(input) {
   }
   return out;
 }
+
+/**
+ * ลบโค้ดถาวร — ทำได้เฉพาะโค้ดที่ยังไม่เคยถูกใช้
+ * โค้ดที่เคยใช้แล้วต้องเก็บไว้ ไม่งั้นบิลเก่าจะบอกไม่ได้ว่าส่วนลดมาจากไหน
+ */
+export async function remove(id) {
+  const used = await promoRepo.countUsage(id);
+  if (used > 0) {
+    throw ApiError.conflict(
+      `โค้ดนี้ถูกใช้ไปแล้ว ${used} ครั้ง จึงลบถาวรไม่ได้ ให้กด "ปิด" แทน ลูกค้าจะใช้ไม่ได้อีกแต่บิลเก่ายังอ้างอิงได้`
+    );
+  }
+
+  const deleted = await promoRepo.remove(id);
+  if (!deleted) throw ApiError.notFound('ไม่พบโปรโมชั่นนี้');
+  return { message: `ลบโค้ด ${deleted.code} เรียบร้อย` };
+}

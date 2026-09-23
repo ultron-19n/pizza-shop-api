@@ -42,7 +42,12 @@ router.get('/:id',          publicCache, controller.getById);
 
 router.post('/',             ...manager, validate(menuSchema),    controller.create);
 router.put('/:id',           ...manager,                          controller.update);
-router.delete('/:id',        ...manager,                          controller.deactivate);
+router.delete('/:id',        ...manager,                          controller.deactivate);   // ปิดการขาย ไม่ได้ลบจริง
+
+// ลบถาวร — ทำได้เฉพาะของที่ยังไม่เคยถูกสั่ง (service เป็นคนตรวจและอธิบายเหตุผลถ้าลบไม่ได้)
+router.delete('/items/:id/permanent', ...manager, controller.remove);
+router.delete('/variants/:id',        ...manager, controller.removeVariant);
+router.delete('/toppings/:id',        ...manager, controller.removeTopping);
 router.post('/:id/variants', ...manager, validate(variantSchema), controller.addVariant);
 router.patch('/variants/:id', ...manager, controller.updateVariant);
 

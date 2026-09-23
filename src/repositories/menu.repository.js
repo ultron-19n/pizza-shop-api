@@ -132,6 +132,44 @@ export const updateMenuItem = async (id, patch, db = pool) => {
   return rows[0] || null;
 };
 
+/* ---------- ลบถาวร ----------
+   ทุกตัวต้องนับก่อนว่าเคยถูกใช้ในออเดอร์ไหม ถ้าเคยต้องห้ามลบ
+   ไม่งั้นใบเสร็จเก่าจะอ้างอิงสินค้าที่หายไป และฐานข้อมูลก็จะปฏิเสธเองอยู่แล้ว (foreign key) */
+
+export const countMenuItemUsage = async (id, db = pool) => {
+  const { rows } = await db.query(
+    'SELECT COUNT(*)::int AS n FROM order_items WHERE menu_item_id = $1', [id]);
+  return rows[0].n;
+};
+
+/** ลบเมนู — ขนาด/ราคา (pizza_variants) ถูกลบตามอัตโนมัติด้วย ON DELETE CASCADE */
+export const deleteMenuItem = async (id, db = pool) => {
+  const { rows } = await db.query('DELETE FROM menu_items WHERE id = $1 RETURNING id, name', [id]);
+  return rows[0] || null;
+};
+
+export const countVariantUsage = async (id, db = pool) => {
+  const { rows } = await db.query(
+    'SELECT COUNT(*)::int AS n FROM order_items WHERE pizza_variant_id = $1', [id]);
+  return rows[0].n;
+};
+
+export const deleteVariant = async (id, db = pool) => {
+  const { rows } = await db.query('DELETE FROM pizza_variants WHERE id = $1 RETURNING id, size', [id]);
+  return rows[0] || null;
+};
+
+export const countToppingUsage = async (id, db = pool) => {
+  const { rows } = await db.query(
+    'SELECT COUNT(*)::int AS n FROM order_item_toppings WHERE topping_id = $1', [id]);
+  return rows[0].n;
+};
+
+export const deleteTopping = async (id, db = pool) => {
+  const { rows } = await db.query('DELETE FROM toppings WHERE id = $1 RETURNING id, name', [id]);
+  return rows[0] || null;
+};
+
 export const deactivateMenuItem = async (id, db = pool) => {
   const { rowCount } = await db.query(
     'UPDATE menu_items SET is_active = FALSE WHERE id = $1',

@@ -39,3 +39,5 @@ export const checkPromotion = asyncHandler(async (req, res) => {
 export const summary = asyncHandler(async (req, res) => {
   res.json(await orderService.summary({ date: req.query.date || null }));
 });
+
+export const remove = asyncHandler(async (req, res) => res.json(await orderService.remove(req.params.id)));

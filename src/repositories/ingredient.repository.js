@@ -124,3 +124,18 @@ export const findLogs = async (ingredientId, limit = 100, db = pool) => {
   );
   return rows;
 };
+
+/** วัตถุดิบถูกอ้างอิงที่ไหนบ้าง — สูตรอาหารและประวัติการเข้า-ออก */
+export const countUsage = async (id, db = pool) => {
+  const { rows } = await db.query(
+    `SELECT (SELECT COUNT(*)::int FROM pizza_recipes  WHERE ingredient_id = $1) AS recipes,
+            (SELECT COUNT(*)::int FROM inventory_logs WHERE ingredient_id = $1) AS logs`,
+    [id]
+  );
+  return rows[0];
+};
+
+export const remove = async (id, db = pool) => {
+  const { rows } = await db.query('DELETE FROM ingredients WHERE id = $1 RETURNING id, name', [id]);
+  return rows[0] || null;
+};

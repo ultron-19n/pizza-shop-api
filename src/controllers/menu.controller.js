@@ -36,3 +36,8 @@ export const createTopping = asyncHandler(async (req, res) => {
 export const updateTopping = asyncHandler(async (req, res) => {
   res.json(await menuService.updateTopping(req.params.id, req.body));
 });
+
+/* ---------- ลบถาวร ---------- */
+export const remove = asyncHandler(async (req, res) => res.json(await menuService.remove(req.params.id)));
+export const removeVariant = asyncHandler(async (req, res) => res.json(await menuService.removeVariant(req.params.id)));
+export const removeTopping = asyncHandler(async (req, res) => res.json(await menuService.removeTopping(req.params.id)));

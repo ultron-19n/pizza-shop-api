@@ -321,3 +321,14 @@ export const bestSellers = async (limit = 10, db = pool) => {
   );
   return rows;
 };
+
+/**
+ * ลบบิลถาวร — ใช้กับบิลที่ยกเลิกแล้วเท่านั้น (ผู้เรียกเป็นคนตรวจสถานะ)
+ * order_items / order_item_toppings / payments ถูกลบตามด้วย ON DELETE CASCADE
+ * ส่วน inventory_logs อ้างถึงบิลด้วยเลขเฉย ๆ ไม่มี foreign key จึงต้องล้างเองก่อน
+ */
+export const removeOrder = async (id, db = pool) => {
+  await db.query('DELETE FROM inventory_logs WHERE reference_order_id = $1', [id]);
+  const { rows } = await db.query('DELETE FROM orders WHERE id = $1 RETURNING id, order_code', [id]);
+  return rows[0] || null;
+};

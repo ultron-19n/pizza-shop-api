@@ -54,3 +54,47 @@ export async function updateTopping(id, patch) {
   if (!updated) throw ApiError.notFound('ไม่พบท็อปปิ้งนี้');
   return updated;
 }
+
+/* ---------- ลบถาวร ----------
+   ของที่เคยขายไปแล้วลบไม่ได้ เพราะใบเสร็จและรายงานย้อนหลังอ้างอิงอยู่
+   กรณีนั้นให้ "ปิดการขาย" แทน ซึ่งซ่อนจากหน้าร้านแต่ประวัติยังอยู่ครบ */
+
+export async function remove(id) {
+  const used = await menuRepo.countMenuItemUsage(id);
+  if (used > 0) {
+    throw ApiError.conflict(
+      `เมนูนี้เคยถูกสั่งไปแล้ว ${used} ครั้ง จึงลบถาวรไม่ได้ ` +
+      'ให้กด "ปิดขาย" แทน เมนูจะหายจากหน้าร้านแต่ใบเสร็จเก่ายังอ้างอิงได้'
+    );
+  }
+
+  const deleted = await menuRepo.deleteMenuItem(id);
+  if (!deleted) throw ApiError.notFound('ไม่พบเมนูนี้');
+  return { message: `ลบเมนู "${deleted.name}" เรียบร้อย` };
+}
+
+export async function removeVariant(id) {
+  const used = await menuRepo.countVariantUsage(id);
+  if (used > 0) {
+    throw ApiError.conflict(
+      `ขนาดนี้เคยถูกสั่งไปแล้ว ${used} ครั้ง จึงลบถาวรไม่ได้ ให้ทำเครื่องหมายว่าของหมดแทน`
+    );
+  }
+
+  const deleted = await menuRepo.deleteVariant(id);
+  if (!deleted) throw ApiError.notFound('ไม่พบขนาด/ราคานี้');
+  return { message: 'ลบขนาดเรียบร้อย' };
+}
+
+export async function removeTopping(id) {
+  const used = await menuRepo.countToppingUsage(id);
+  if (used > 0) {
+    throw ApiError.conflict(
+      `ท็อปปิ้งนี้เคยถูกสั่งไปแล้ว ${used} ครั้ง จึงลบถาวรไม่ได้ ให้กด "ปิดขาย" แทน`
+    );
+  }
+
+  const deleted = await menuRepo.deleteTopping(id);
+  if (!deleted) throw ApiError.notFound('ไม่พบท็อปปิ้งนี้');
+  return { message: `ลบท็อปปิ้ง "${deleted.name}" เรียบร้อย` };
+}

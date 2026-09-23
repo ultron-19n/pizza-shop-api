@@ -11,3 +11,5 @@ export const create = asyncHandler(async (req, res) => {
 export const update = asyncHandler(async (req, res) => {
   res.json(await promoService.update(req.params.id, req.body));
 });
+
+export const remove = asyncHandler(async (req, res) => res.json(await promoService.remove(req.params.id)));

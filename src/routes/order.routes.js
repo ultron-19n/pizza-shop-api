@@ -3,7 +3,7 @@ import * as controller from '../controllers/order.controller.js';
 import { authRequired, authOptional, requireRole } from '../middleware/auth.js';
 import { validate } from '../middleware/validate.js';
 import { rateLimit } from '../middleware/rateLimit.js';
-import { ORDER_STATUS_LIST, ORDER_TYPE_LIST, PAYMENT_METHOD_LIST,
+import { ROLES, ORDER_STATUS_LIST, ORDER_TYPE_LIST, PAYMENT_METHOD_LIST,
          STAFF_ROLES, MANAGEMENT_ROLES } from '../config/constants.js';
 
 const router = Router();
@@ -52,5 +52,8 @@ router.get('/:id', ...staff, controller.getDetail); // มีชื่อ/เบ
 
 router.patch('/:id/status', ...staff, validate(statusSchema), controller.changeStatus);
 router.post('/:id/pay',     ...staff, validate(paySchema),    controller.pay);
+
+// ลบบิลถาวร — เฉพาะผู้ดูแลระบบ และเฉพาะบิลที่ยกเลิกแล้ว
+router.delete('/:id', authRequired, requireRole(ROLES.ADMIN), controller.remove);
 
 export default router;

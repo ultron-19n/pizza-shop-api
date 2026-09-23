@@ -106,6 +106,30 @@ export const listLowStock = (db) => ingredientRepo.findLowStock(db);
 export const create = (data, db) => ingredientRepo.insertIngredient(data, db);
 export const logs = (ingredientId, db) => ingredientRepo.findLogs(ingredientId, 100, db);
 
+/**
+ * ลบวัตถุดิบถาวร — ทำได้เฉพาะตัวที่ยังไม่ผูกกับสูตรอาหารและไม่มีประวัติการเข้า-ออก
+ * (ส่วนใหญ่คือตัวที่เพิ่งเพิ่มผิด) ตัวที่ใช้งานจริงแล้วลบไม่ได้ เพราะรายงานย้อนหลังจะเพี้ยน
+ */
+export async function remove(id) {
+  const found = await ingredientRepo.findById(id);
+  if (!found) throw ApiError.notFound('ไม่พบวัตถุดิบนี้');
+
+  const used = await ingredientRepo.countUsage(id);
+  if (used.recipes > 0) {
+    throw ApiError.conflict(
+      `วัตถุดิบนี้อยู่ในสูตรของ ${used.recipes} เมนู จึงลบไม่ได้ ต้องแก้สูตรให้เลิกใช้ก่อน`
+    );
+  }
+  if (used.logs > 0) {
+    throw ApiError.conflict(
+      `วัตถุดิบนี้มีประวัติการเข้า-ออก ${used.logs} รายการ จึงลบถาวรไม่ได้ เพราะรายงานย้อนหลังอ้างอิงอยู่`
+    );
+  }
+
+  const deleted = await ingredientRepo.remove(id);
+  return { message: `ลบวัตถุดิบ "${deleted.name}" เรียบร้อย` };
+}
+
 /** รับของเข้าคลัง — ปรับสต๊อกกับเขียน log อยู่ใน transaction เดียว (ถ้าไม่ได้ส่ง db มา จะเปิดให้เอง) */
 export async function restock({ ingredientId, quantity, userId, note }, db) {
   const qty = Number(quantity);
