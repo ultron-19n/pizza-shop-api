@@ -3,85 +3,183 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="only light">
 <title>FORNO · หลังร้าน</title>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@600;700&family=IBM+Plex+Sans+Thai:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
-:root{--charcoal:#171310;--dough:#F7F1E4;--ember:#E2521A;--basil:#38614A;--tomato:#B23227;
-      --ink:#2A2320;--muted:#7A6E64;--line:#E0D6C4;--card:#FFFCF6}
+/* ธีม Microsoft Word (Office light) — พื้นหลังขาว ตัวอักษรดำ แถบแท็บแบบ ribbon สีเน้นน้ำเงิน Word */
+:root{
+  color-scheme: only light;   /* กันเบราว์เซอร์บังคับแปลงหน้าเว็บเป็นโหมดมืดเอง */
+  background:#FFFFFF;--charcoal:#2B579A;--accent-dark:#1F4278;--accent-soft:#EFF4FB;--dough:#FFFFFF;
+      --ember:#2B579A;--basil:#107C10;--tomato:#A4262C;
+      --ink:#000000;--muted:#3B3A39;--line:#E1DFDD;--card:#FFFFFF;
+      --canvas:#FFFFFF;--hover:#F3F2F1;--btn-line:#8A8886}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'IBM Plex Sans Thai',system-ui,sans-serif;background:var(--dough);color:var(--ink);line-height:1.6}
-h1,h2,h3{font-family:'Bai Jamjuree',sans-serif;font-weight:700;line-height:1.2}
+body{font-family:'Segoe UI','Leelawadee UI','Sarabun',system-ui,sans-serif;background:var(--canvas);color:var(--ink);font-size:15px;line-height:1.55}
+h1,h2,h3{font-weight:600;line-height:1.25}
 button{font:inherit;cursor:pointer;border:none;background:none;color:inherit}
 input{font:inherit}
 .price{font-variant-numeric:tabular-nums}
-:focus-visible{outline:2px solid var(--ember);outline-offset:2px}
+:focus-visible{outline:2px solid var(--charcoal);outline-offset:1px}
 
-header{background:var(--charcoal);color:var(--dough);position:sticky;top:0;z-index:20}
-.bar{max-width:1080px;margin:0 auto;padding:14px 20px;display:flex;align-items:center;gap:22px;flex-wrap:wrap}
-.logo{font-family:'Bai Jamjuree',sans-serif;font-weight:700;font-size:19px}
-.logo span{color:var(--ember)}
-.tabs{display:flex;gap:18px;font-size:15px;color:#B8AC9C}
-.tabs button[aria-pressed="true"]{color:var(--dough);border-bottom:2px solid var(--ember);padding-bottom:2px}
-.who{margin-left:auto;font-size:14px;color:#B8AC9C;display:flex;gap:14px;align-items:center}
+/* แถบชื่อเรื่อง + ribbon แบบ Word */
+header{background:var(--card);color:var(--ink);position:sticky;top:0;z-index:20;border-bottom:1px solid var(--line)}
+.bar{max-width:1080px;margin:0 auto;padding:0 20px;display:flex;align-items:stretch;gap:16px;flex-wrap:wrap;min-height:44px}
+.logo{font-weight:600;font-size:15px;align-self:center}
+.logo span{color:var(--charcoal)}
+.tabs{display:flex;gap:2px;font-size:14px;color:var(--ink);align-items:stretch}
+.tabs button{padding:0 14px;border-bottom:2px solid transparent}
+.tabs button:hover{background:var(--hover)}
+.tabs button[aria-pressed="true"]{color:var(--charcoal);border-bottom-color:var(--charcoal);font-weight:600}
+.who{margin-left:auto;font-size:13.5px;color:var(--muted);display:flex;gap:12px;align-items:center}
+.who button{color:var(--charcoal);text-decoration:underline;font-size:13.5px}
 
-main{max-width:1080px;margin:0 auto;padding:26px 20px 80px}
+main{max-width:1080px;margin:0 auto;padding:22px 20px 80px}
 .panel{display:none}.panel.on{display:block}
 
 /* login */
-.login{max-width:380px;margin:70px auto;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:28px}
-.login h2{font-size:24px;margin-bottom:6px}
-.login p{color:var(--muted);font-size:14px;margin-bottom:20px}
+.login{max-width:380px;margin:60px auto;background:var(--card);border:1px solid var(--line);border-radius:4px;padding:26px;box-shadow:0 3.2px 7.2px rgba(0,0,0,.13)}
+.login h2{font-size:20px;margin-bottom:6px}
+.login p{color:var(--muted);font-size:13.5px;margin-bottom:18px}
 .field{margin-bottom:12px}
-.field label{display:block;font-size:13px;color:var(--muted);margin-bottom:4px}
-.field input{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:8px;background:#fff}
-.primary{width:100%;background:var(--ember);color:#fff;padding:12px;border-radius:8px;font-weight:600}
-.err{background:#FBEAE7;border:1px solid var(--tomato);color:var(--tomato);padding:10px 13px;border-radius:8px;font-size:14px;margin-bottom:12px}
+.field label{display:block;font-size:13px;color:var(--ink);margin-bottom:4px}
+.field input{width:100%;padding:7px 10px;border:1px solid var(--btn-line);border-radius:3px;background:#fff}
+.field input:focus{border-color:var(--charcoal);outline:none;box-shadow:inset 0 -1px 0 var(--charcoal)}
+.primary{width:100%;background:var(--charcoal);color:#fff;padding:9px;border-radius:3px;font-weight:600;border:1px solid var(--charcoal)}
+.primary:hover:not(:disabled){background:var(--accent-dark);border-color:var(--accent-dark)}
+.err{background:#FDE7E9;border:1px solid #F1BBBE;border-left:3px solid var(--tomato);color:#4B1113;padding:10px 13px;border-radius:2px;font-size:13.5px;margin-bottom:12px}
 
 /* filters */
-.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
-.chip{padding:7px 15px;border-radius:999px;border:1px solid var(--line);background:var(--card);font-size:14px}
-.chip[aria-pressed="true"]{background:var(--charcoal);color:var(--dough);border-color:var(--charcoal)}
+.filters{display:flex;gap:0;flex-wrap:wrap;margin-bottom:16px;background:var(--card);border:1px solid var(--line);border-radius:3px;padding:3px}
+.chip{padding:6px 14px;border-radius:3px;border:1px solid transparent;background:none;font-size:14px}
+.chip:hover{background:var(--hover)}
+.chip[aria-pressed="true"]{background:var(--accent-soft);color:var(--charcoal);border-color:#C7D7EE;font-weight:600}
 
 /* order cards */
-.order{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--muted);border-radius:10px;padding:16px 18px;margin-bottom:12px}
-.order.pending{border-left-color:var(--ember)}
-.order.preparing{border-left-color:#C99A2E}
+.order{background:var(--card);border:1px solid var(--line);border-left:3px solid var(--muted);border-radius:3px;padding:14px 16px;margin-bottom:10px;box-shadow:0 1.6px 3.6px rgba(0,0,0,.08)}
+.order.pending{border-left-color:#D83B01}
+.order.preparing{border-left-color:#C19C00}
 .order.ready{border-left-color:var(--basil)}
-.order.delivering{border-left-color:#3B6E9E}
+.order.delivering{border-left-color:var(--charcoal)}
 .order.completed{border-left-color:var(--line);opacity:.65}
 .order.cancelled{border-left-color:var(--tomato);opacity:.6}
 .o-top{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
-.o-code{font-family:'Bai Jamjuree',sans-serif;font-size:18px}
-.o-meta{font-size:13.5px;color:var(--muted)}
-.o-amt{margin-left:auto;font-family:'Bai Jamjuree',sans-serif;font-size:20px;color:var(--ember)}
-.o-cust{font-size:14px;color:var(--muted);margin-top:2px}
-.o-items{margin:10px 0 0;font-size:14.5px}
+.o-code{font-size:15.5px;font-weight:600}
+.o-meta{font-size:13px;color:var(--muted)}
+.o-amt{margin-left:auto;font-size:17px;color:var(--charcoal);font-weight:600}
+.o-cust{font-size:13.5px;color:var(--muted);margin-top:2px}
+.o-items{margin:9px 0 0;font-size:14px}
 .o-items li{list-style:none;padding:2px 0}
-.o-items .sub{color:var(--muted);font-size:13px;padding-left:14px}
-.o-note{font-size:13.5px;color:var(--tomato);margin-top:6px}
-.o-act{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
-.o-act button{padding:8px 15px;border-radius:7px;border:1px solid var(--line);font-size:14px;background:#fff}
+.o-items .sub{color:var(--muted);font-size:12.5px;padding-left:14px}
+.o-note{font-size:13px;color:var(--tomato);margin-top:6px}
+.o-act{display:flex;gap:6px;margin-top:11px;flex-wrap:wrap}
+.o-act button{padding:6px 14px;border-radius:3px;border:1px solid var(--btn-line);font-size:14px;background:#fff}
+.o-act button:hover{background:var(--hover)}
 .o-act .next{background:var(--charcoal);color:var(--dough);border-color:var(--charcoal)}
+.o-act .next:hover{background:var(--accent-dark)}
 .o-act .pay{border-color:var(--basil);color:var(--basil)}
 .o-act .cancel{border-color:var(--tomato);color:var(--tomato)}
-.paid{font-size:13px;color:var(--basil)}
+.paid{font-size:13px;color:var(--basil);align-self:center}
 
 /* table */
-table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden}
-th,td{padding:11px 14px;text-align:left;border-bottom:1px solid var(--line);font-size:14.5px}
-th{background:#F0E8D8;font-weight:600;font-size:13px;color:var(--muted)}
+table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line);border-radius:3px;overflow:hidden}
+th,td{padding:9px 13px;text-align:left;border-bottom:1px solid var(--line);font-size:14px}
+th{background:#FAF9F8;font-weight:600;font-size:12.5px;color:var(--muted)}
+tbody tr:hover{background:#FAF9F8}
 tr:last-child td{border-bottom:none}
 td.num{text-align:right;font-variant-numeric:tabular-nums}
 .low{color:var(--tomato);font-weight:600}
-.restock{padding:5px 12px;border:1px solid var(--line);border-radius:6px;font-size:13px;background:#fff}
+.restock{padding:4px 11px;border:1px solid var(--btn-line);border-radius:3px;font-size:13px;background:#fff}
+.restock:hover{background:var(--hover)}
 
-.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:22px}
-.stat{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px}
-.stat b{display:block;font-family:'Bai Jamjuree',sans-serif;font-size:30px;color:var(--ember);line-height:1.2}
-.stat span{font-size:13.5px;color:var(--muted)}
-.empty{color:var(--muted);padding:26px 0;text-align:center}
-h2.sec{font-size:19px;margin:24px 0 12px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:20px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:3px;padding:14px;box-shadow:0 1.6px 3.6px rgba(0,0,0,.08)}
+.stat b{display:block;font-size:24px;color:var(--charcoal);line-height:1.25;font-weight:600}
+.stat span{font-size:13px;color:var(--muted)}
+.empty{color:var(--muted);padding:24px 0;text-align:center}
+h2.sec{font-size:16px;margin:22px 0 10px;font-weight:600}
+.drawer{margin-top:10px;padding:11px 14px;border:1px solid #A7DFA2;background:#DFF6DD;border-radius:3px;font-size:14px;color:#0B6A0B}
+.drawer b{font-size:19px;font-weight:600}
+
+/* payment modal */
+.backdrop{position:fixed;inset:0;background:rgba(0,0,0,.4);display:none;z-index:60;padding:20px;overflow-y:auto}
+.backdrop.open{display:grid;place-items:center}
+.paybox{background:var(--card);border-radius:4px;max-width:440px;width:100%;overflow:hidden;box-shadow:0 25.6px 57.6px rgba(0,0,0,.22),0 4.8px 14.4px rgba(0,0,0,.18)}
+.pay-head{padding:14px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:start;gap:12px}
+.pay-head h3{font-size:17px;font-weight:600}
+.pay-head p{font-size:13px;color:var(--muted)}
+.pay-x{font-size:18px;color:var(--muted);line-height:1;padding:2px 8px;border-radius:3px}
+.pay-x:hover{background:#E81123;color:#fff}
+.pay-body{padding:16px 20px}
+.pay-due{text-align:center;padding:4px 0 14px}
+.pay-due span{font-size:13px;color:var(--muted)}
+.pay-due b{display:block;font-size:34px;color:var(--charcoal);line-height:1.15;font-weight:600}
+.methods{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:14px}
+.methods button{padding:8px 4px;border:1px solid var(--btn-line);border-radius:3px;background:#fff;font-size:13.5px}
+.methods button:hover{background:var(--hover)}
+.methods button[aria-pressed="true"]{background:var(--accent-soft);color:var(--charcoal);border-color:var(--charcoal);font-weight:600}
+.pay-body label{display:block;font-size:13px;color:var(--ink);margin-bottom:4px}
+.pay-body input{width:100%;padding:7px 10px;border:1px solid var(--btn-line);border-radius:3px;background:#fff}
+.pay-body input:focus{border-color:var(--charcoal);outline:none;box-shadow:inset 0 -1px 0 var(--charcoal)}
+#pReceived{font-size:22px;text-align:right;font-variant-numeric:tabular-nums;padding:8px 10px}
+.quick{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0 12px}
+.quick button{flex:1;padding:7px 6px;border:1px solid var(--btn-line);border-radius:3px;background:#fff;font-size:14px}
+.quick button:hover{background:var(--hover);border-color:var(--charcoal);color:var(--charcoal)}
+/* แป้นตัวเลข — ปุ่มสูง 44px ตามขนาดขั้นต่ำที่กดด้วยนิ้วบนจอสัมผัสได้แม่น */
+.keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:12px}
+.keypad button{height:44px;border:1px solid var(--btn-line);border-radius:3px;background:#fff;font-size:17px;font-variant-numeric:tabular-nums}
+.keypad button:hover{background:var(--hover)}
+.keypad button:active{background:var(--accent-soft);border-color:var(--charcoal)}
+.keypad .wide{grid-column:span 1;color:var(--tomato)}
+.change{display:flex;justify-content:space-between;align-items:baseline;padding:9px 13px;border-radius:2px;background:#DFF6DD;border:1px solid #A7DFA2;color:#0B6A0B}
+.change b{font-size:22px;font-weight:600}
+.change.short{background:#FDE7E9;border-color:#F1BBBE;color:var(--tomato)}
+.qr{text-align:center;margin-bottom:12px}
+.qr #qrImg{display:inline-block;padding:10px;background:#fff;border:1px solid var(--line);border-radius:3px}
+.qr p{font-size:13px;color:var(--muted);margin-top:6px}
+.pay-foot{padding:12px 20px;border-top:1px solid var(--line);background:var(--canvas);display:flex;gap:8px}
+.pay-foot .primary{flex:1}
+.ghost-btn{padding:9px 16px;border:1px solid var(--btn-line);border-radius:3px;background:#fff;font-size:14px;white-space:nowrap}
+.ghost-btn:hover{background:var(--hover);border-color:var(--charcoal);color:var(--charcoal)}
+.pay-foot .primary:disabled{background:#F3F2F1;color:#A19F9D;border-color:#EDEBE9;cursor:not-allowed}
+.done{text-align:center;padding:10px 0}
+.done b{display:block;font-size:36px;color:var(--basil);line-height:1.15;font-weight:600}
+.done span{color:var(--muted);font-size:13.5px}
+
+/* menu / promo / staff */
+.sec-head{display:flex;align-items:baseline;gap:12px}
+.sec-head .add{margin-left:auto;padding:6px 13px;border:1px solid var(--btn-line);border-radius:3px;font-size:14px;background:#fff}
+.sec-head .add:hover{background:var(--accent-soft);border-color:var(--charcoal);color:var(--charcoal)}
+.mitem{background:var(--card);border:1px solid var(--line);border-radius:3px;padding:13px 15px;margin-bottom:9px;box-shadow:0 1.6px 3.6px rgba(0,0,0,.08)}
+.mitem.off{opacity:.6;background:var(--canvas)}
+.m-top{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.m-top h3{font-size:15.5px;font-weight:600}
+.m-cat{font-size:12.5px;color:var(--muted)}
+.m-top .acts{margin-left:auto;display:flex;gap:6px}
+.m-top .acts button{padding:4px 11px;border:1px solid var(--btn-line);border-radius:3px;font-size:13px;background:#fff}
+.m-top .acts button:hover{background:var(--hover)}
+.vrow{display:flex;align-items:center;gap:9px;padding:7px 0;border-top:1px solid var(--line);font-size:14px;flex-wrap:wrap}
+.vrow .sz{min-width:132px}
+.vrow input{width:96px;padding:5px 8px;border:1px solid var(--btn-line);border-radius:3px;text-align:right;background:#fff}
+.vrow input:focus{border-color:var(--charcoal);outline:none;box-shadow:inset 0 -1px 0 var(--charcoal)}
+.vrow .save{padding:4px 11px;border:1px solid var(--btn-line);border-radius:3px;font-size:13px;background:#fff}
+.vrow .save:hover{background:var(--hover)}
+.vrow .off-btn{margin-left:auto;padding:4px 11px;border:1px solid var(--btn-line);border-radius:3px;font-size:13px;background:#fff}
+.vrow .off-btn:hover{background:var(--hover)}
+.tag{font-size:11.5px;padding:1px 8px;border-radius:2px;border:1px solid var(--line)}
+.tag.ok{color:#0B6A0B;background:#DFF6DD;border-color:#A7DFA2}
+.tag.no{color:var(--tomato);background:#FDE7E9;border-color:#F1BBBE}
+td .mini{padding:4px 10px;border:1px solid var(--btn-line);border-radius:3px;font-size:13px;background:#fff;margin-right:5px}
+td .mini:hover{background:var(--hover)}
+.saved{color:var(--basil);font-size:13px}
+
+/* form dialog */
+.formbox{background:var(--card);border-radius:4px;max-width:460px;width:100%;overflow:hidden;box-shadow:0 25.6px 57.6px rgba(0,0,0,.22),0 4.8px 14.4px rgba(0,0,0,.18)}
+.formbox .pay-body{max-height:70vh;overflow-y:auto}
+.formbox select{width:100%;padding:7px 10px;border:1px solid var(--btn-line);border-radius:3px;background:#fff;font:inherit}
+.formbox .field{margin-bottom:12px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 </style>
 </head>
 <body>
@@ -90,9 +188,12 @@ h2.sec{font-size:19px;margin:24px 0 12px}
   <div class="bar">
     <div class="logo">FORNO<span>.</span> หลังร้าน</div>
     <div class="tabs" id="tabs" hidden>
-      <button data-p="orders" aria-pressed="true">คิวออเดอร์</button>
-      <button data-p="stock"  aria-pressed="false">สต๊อก</button>
-      <button data-p="report" aria-pressed="false">รายงาน</button>
+      <button data-p="orders" aria-pressed="true"  data-role="staff">คิวออเดอร์</button>
+      <button data-p="stock"  aria-pressed="false" data-role="staff">สต๊อก</button>
+      <button data-p="menu"   aria-pressed="false" data-role="manage">เมนู</button>
+      <button data-p="promo"  aria-pressed="false" data-role="manage">โปรโมชั่น</button>
+      <button data-p="staff"  aria-pressed="false" data-role="admin">พนักงาน</button>
+      <button data-p="report" aria-pressed="false" data-role="manage">รายงาน</button>
     </div>
     <div class="who" id="who" hidden><span id="whoName"></span><button id="logout">ออกจากระบบ</button></div>
   </div>
@@ -102,10 +203,13 @@ h2.sec{font-size:19px;margin:24px 0 12px}
   <!-- ล็อกอิน -->
   <section class="panel on" id="p-login">
     <div class="login">
-      <h2>เข้าสู่ระบบ</h2>
-      <p>สำหรับพนักงานร้านเท่านั้น</p>
+      <h2 id="loginTitle">เข้าสู่ระบบ</h2>
+      <p id="loginHint">สำหรับพนักงานร้านเท่านั้น</p>
       <div id="loginErr"></div>
-      <div class="field"><label for="u">ชื่อผู้ใช้</label><input id="u" autocomplete="username"></div>
+      <div class="field"><label for="u" id="uLabel">อีเมลหรือชื่อผู้ใช้</label>
+        <input id="u" autocomplete="username" placeholder="you@example.com"></div>
+      <div class="field" id="emailField" hidden><label for="em">อีเมล</label>
+        <input id="em" type="email" inputmode="email" autocomplete="email" placeholder="you@example.com"></div>
       <div class="field"><label for="p">รหัสผ่าน</label><input id="p" type="password" autocomplete="current-password"></div>
       <button class="primary" id="loginBtn">เข้าสู่ระบบ</button>
     </div>
@@ -132,9 +236,56 @@ h2.sec{font-size:19px;margin:24px 0 12px}
     </tr></thead><tbody id="stockBody"></tbody></table>
   </section>
 
+  <!-- เมนู -->
+  <section class="panel" id="p-menu">
+    <div class="sec-head">
+      <h2 class="sec">เมนูทั้งหมด</h2>
+      <button class="add" id="addItemBtn">+ เพิ่มเมนู</button>
+    </div>
+    <div id="menuList"><p class="empty">กำลังโหลด…</p></div>
+
+    <div class="sec-head">
+      <h2 class="sec">ท็อปปิ้ง</h2>
+      <button class="add" id="addTopBtn">+ เพิ่มท็อปปิ้ง</button>
+    </div>
+    <table><thead><tr>
+      <th>ท็อปปิ้ง</th><th class="num">ราคา</th><th>สถานะ</th><th></th>
+    </tr></thead><tbody id="topBody"></tbody></table>
+  </section>
+
+  <!-- โปรโมชั่น -->
+  <section class="panel" id="p-promo">
+    <div class="sec-head">
+      <h2 class="sec">โค้ดส่วนลด</h2>
+      <button class="add" id="addPromoBtn">+ เพิ่มโค้ด</button>
+    </div>
+    <table><thead><tr>
+      <th>โค้ด</th><th>ชื่อ</th><th class="num">ส่วนลด</th><th class="num">ขั้นต่ำ</th>
+      <th>ช่วงเวลา</th><th class="num">ใช้ไป</th><th>สถานะ</th><th></th>
+    </tr></thead><tbody id="promoBody"></tbody></table>
+  </section>
+
+  <!-- พนักงาน -->
+  <section class="panel" id="p-staff">
+    <div class="sec-head">
+      <h2 class="sec">บัญชีพนักงาน</h2>
+      <button class="add" id="addStaffBtn">+ เพิ่มพนักงาน</button>
+    </div>
+    <table><thead><tr>
+      <th>ชื่อผู้ใช้</th><th>อีเมล</th><th>ชื่อ-สกุล</th><th>เบอร์โทร</th><th>สิทธิ์</th><th>สถานะ</th><th></th>
+    </tr></thead><tbody id="staffBody"></tbody></table>
+  </section>
+
   <!-- รายงาน -->
   <section class="panel" id="p-report">
     <div class="stats" id="stats"></div>
+
+    <h2 class="sec">รับเงินวันนี้ แยกตามช่องทาง</h2>
+    <table><thead><tr>
+      <th>ช่องทาง</th><th class="num">จำนวนบิล</th><th class="num">ยอดรับ</th>
+      <th class="num">เงินที่รับมา</th><th class="num">ทอนไป</th>
+    </tr></thead><tbody id="methodBody"></tbody></table>
+    <p id="drawerNote" class="drawer"></p>
     <h2 class="sec">ยอดขายรายวัน</h2>
     <table><thead><tr>
       <th>วันที่</th><th class="num">จำนวนออเดอร์</th><th class="num">ยอดขาย</th><th class="num">เฉลี่ย/บิล</th>
@@ -146,6 +297,60 @@ h2.sec{font-size:19px;margin:24px 0 12px}
   </section>
 </main>
 
+<!-- รับชำระเงิน -->
+<div class="backdrop" id="payModal">
+  <div class="paybox" role="dialog" aria-modal="true" aria-labelledby="pTitle">
+    <div class="pay-head">
+      <div><h3 id="pTitle">รับชำระเงิน</h3><p id="pSub"></p></div>
+      <button class="pay-x" id="pClose" aria-label="ปิด">✕</button>
+    </div>
+    <div class="pay-body" id="pBody">
+      <div class="pay-due"><span>ยอดที่ต้องชำระ</span><b class="price" id="pDue"></b></div>
+      <div class="methods" id="pMethods">
+        <button data-m="cash" aria-pressed="true">เงินสด</button>
+        <button data-m="promptpay" aria-pressed="false">PromptPay</button>
+        <button data-m="card" aria-pressed="false">บัตร</button>
+        <button data-m="transfer" aria-pressed="false">โอน</button>
+      </div>
+
+      <div id="pCash">
+        <label for="pReceived">รับเงินมา (บาท)</label>
+        <input id="pReceived" type="number" inputmode="decimal" min="0" step="0.01">
+        <div class="quick" id="pQuick"></div>
+        <div class="keypad" id="pKeypad">
+          <button data-k="1">1</button><button data-k="2">2</button><button data-k="3">3</button>
+          <button data-k="4">4</button><button data-k="5">5</button><button data-k="6">6</button>
+          <button data-k="7">7</button><button data-k="8">8</button><button data-k="9">9</button>
+          <button data-k="00">00</button><button data-k="0">0</button>
+          <button data-k="back" class="wide" aria-label="ลบตัวสุดท้าย">⌫</button>
+        </div>
+        <div class="change" id="pChange"><span>เงินทอน</span><b class="price" id="pChangeAmt">0 ฿</b></div>
+      </div>
+
+      <div id="pOther" hidden>
+        <div class="qr" id="pQr" hidden><div id="qrImg"></div><p id="pQrNote"></p></div>
+        <label for="pRef">เลขอ้างอิง / 4 ตัวท้ายบัตร (ถ้ามี)</label>
+        <input id="pRef" maxlength="100" autocomplete="off">
+      </div>
+      <div id="pErr"></div>
+    </div>
+    <div class="pay-foot" id="pFoot"><button class="primary" id="pConfirm">ยืนยันรับชำระ</button></div>
+  </div>
+</div>
+
+<!-- ฟอร์มเพิ่ม/แก้ไข ใช้ร่วมกันทุกแท็บ -->
+<div class="backdrop" id="formModal">
+  <div class="formbox" role="dialog" aria-modal="true" aria-labelledby="fTitle">
+    <div class="pay-head">
+      <h3 id="fTitle"></h3>
+      <button class="pay-x" id="fClose" aria-label="ปิด">✕</button>
+    </div>
+    <div class="pay-body" id="fFields"></div>
+    <div class="pay-foot"><button class="primary" id="fSave">บันทึก</button></div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
 const API = location.origin + '/api';
 const money = n => Number(n||0).toLocaleString('th-TH',{minimumFractionDigits:0,maximumFractionDigits:2}) + ' ฿';
@@ -163,7 +368,8 @@ function nextStep(o){
   return NEXT[o.status] ? { to:NEXT[o.status], label:NEXT_LABEL[o.status] } : null;
 }
 
-let token = null, statusFilter = '', timer = null;
+let token = null, statusFilter = '', timer = null, loaded = new Map(), role = null, categories = [];
+const ROLE_TH = { admin:'ผู้ดูแลระบบ', manager:'ผู้จัดการ', staff:'พนักงาน', rider:'ไรเดอร์' };
 
 const api = (path, opt = {}) => fetch(API + path, {
   ...opt,
@@ -171,14 +377,57 @@ const api = (path, opt = {}) => fetch(API + path, {
 }).then(async r => { const d = await r.json(); if(!r.ok) throw new Error(d.message); return d; });
 
 /* ---------- ล็อกอิน ---------- */
+/** ระบบเพิ่งติดตั้ง ยังไม่มีบัญชีไหนเลย — ให้หน้านี้สร้าง admin คนแรกได้เลย ไม่ต้องไปรันคำสั่งเอง */
+let firstSetup = false;
+api('/auth/setup').then(d => {
+  if(!d.needs_setup) return;
+  firstSetup = true;
+  loginTitle.textContent = 'ตั้งค่าครั้งแรก';
+  loginHint.textContent = 'ยังไม่มีบัญชีในระบบ ตั้งชื่อผู้ใช้ อีเมล และรหัสผ่านของผู้ดูแลระบบคนแรก (รหัสอย่างน้อย 8 ตัวอักษร)';
+  loginBtn.textContent = 'สร้างบัญชีผู้ดูแลระบบ';
+  uLabel.textContent = 'ชื่อผู้ใช้';
+  u.placeholder = '';
+  emailField.hidden = false;   // ตอนสร้างบัญชีต้องกรอกอีเมลแยก จะได้ใช้อีเมลล็อกอินครั้งต่อไปได้
+}).catch(() => {});
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 loginBtn.onclick = async () => {
   loginErr.innerHTML = '';
   try{
-    const d = await api('/auth/login', { method:'POST', body: JSON.stringify({ username:u.value, password:p.value }) });
-    token = d.token;
-    whoName.textContent = (d.user.first_name || d.user.username) + ' · ' + d.user.role;
+    if(firstSetup){
+      if(!EMAIL_RE.test(em.value.trim())) throw new Error('กรอกอีเมลให้ถูกต้อง เช่น you@example.com');
+      await api('/auth/register', { method:'POST',
+        body: JSON.stringify({ username:u.value.trim(), email:em.value.trim(), password:p.value }) });
+      firstSetup = false;   // สร้างแล้วเข้าสู่ระบบด้วยบัญชีเดียวกันต่อได้เลย
+      loginBtn.textContent = 'เข้าสู่ระบบ';
+      emailField.hidden = true;
+      uLabel.textContent = 'อีเมลหรือชื่อผู้ใช้';
+    }
+    // ส่งค่าเดียวกันไปทั้งสองฟิลด์ เซิร์ฟเวอร์จะเทียบให้ทั้งชื่อผู้ใช้และอีเมล
+    const login = u.value.trim();
+    const d = await api('/auth/login', { method:'POST', body: JSON.stringify({ username:login, email:login, password:p.value }) });
+    token = d.token; role = d.user.role;
+    whoName.textContent = (d.user.first_name || d.user.username) + ' · ' + (ROLE_TH[role] || role);
+    // ซ่อนแท็บที่สิทธิ์นี้เรียกไม่ได้ ดีกว่าให้กดแล้วเจอ 403 — เกณฑ์เดียวกับ requireRole ฝั่งเซิร์ฟเวอร์
+    const allowed = {
+      staff:  ['admin','manager','staff'],
+      manage: ['admin','manager'],
+      admin:  ['admin'],
+    };
+    const visible = [...tabs.children].filter(b => {
+      b.hidden = !allowed[b.dataset.role].includes(role);
+      return !b.hidden;
+    });
+
+    if(!visible.length){   // เช่น บัญชีไรเดอร์ — ยังไม่มีหน้าสำหรับสิทธิ์นี้
+      loginErr.innerHTML = '<div class="err">บัญชีนี้ยังไม่มีหน้าใช้งานในระบบหลังร้าน</div>';
+      token = null; role = null;
+      return;
+    }
+
     tabs.hidden = false; who.hidden = false;
-    show('orders');
+    show(visible[0].dataset.p);
   }catch(e){
     loginErr.innerHTML = `<div class="err">${esc(e.message)}</div>`;
   }
@@ -195,8 +444,306 @@ function show(name){
   clearInterval(timer);
   if(name === 'orders'){ loadOrders(); timer = setInterval(loadOrders, 15000); }
   if(name === 'stock')  loadStock();
+  if(name === 'menu')   loadMenu();
+  if(name === 'promo')  loadPromos();
+  if(name === 'staff')  loadStaff();
   if(name === 'report') loadReport();
 }
+
+/* ---------- ฟอร์มกลาง (ใช้ร่วมทุกแท็บ) ---------- */
+/** fields: [{k, label, type, value, options:[[value,label]], hint, required}] */
+function openForm({ title, fields, save, saveLabel = 'บันทึก' }){
+  fTitle.textContent = title;
+  fFields.innerHTML = fields.map(f => {
+    const v = f.value ?? '';
+    const input = f.options
+      ? `<select id="f-${f.k}">${f.options.map(([val,lab]) =>
+          `<option value="${esc(val)}"${String(val) === String(v) ? ' selected' : ''}>${esc(lab)}</option>`).join('')}</select>`
+      : `<input id="f-${f.k}" type="${f.type || 'text'}" value="${esc(v)}"${f.type === 'number' ? ' step="0.01"' : ''}>`;
+    return `<div class="field"><label for="f-${f.k}">${esc(f.label)}</label>${input}
+      ${f.hint ? `<p style="font-size:12.5px;color:var(--muted);margin-top:3px">${esc(f.hint)}</p>` : ''}</div>`;
+  }).join('') + '<div id="fErr"></div>';
+
+  fSave.textContent = saveLabel;
+  fSave.disabled = false;
+  fSave.onclick = async () => {
+    const values = {};
+    for(const f of fields){
+      const el = document.getElementById('f-' + f.k);
+      const raw = el.value.trim();
+      if(f.required && !raw){
+        fErr.innerHTML = `<div class="err">กรุณากรอก${esc(f.label)}</div>`;
+        el.focus(); return;
+      }
+      values[f.k] = f.type === 'number' ? (raw === '' ? null : Number(raw)) : (raw || null);
+    }
+    fSave.disabled = true; fErr.innerHTML = '';
+    try{ await save(values); closeForm(); }
+    catch(err){ fErr.innerHTML = `<div class="err">${esc(err.message)}</div>`; fSave.disabled = false; }
+  };
+  formModal.classList.add('open');
+  fFields.querySelector('input,select')?.focus();
+}
+
+const closeForm = () => formModal.classList.remove('open');
+fClose.onclick = closeForm;
+formModal.onclick = e => { if(e.target === formModal) closeForm(); };
+document.addEventListener('keydown', e => {
+  if(!formModal.classList.contains('open')) return;
+  if(e.key === 'Escape') closeForm();
+  if(e.key === 'Enter' && e.target.tagName === 'INPUT') fSave.click();
+});
+
+/* ---------- เมนู ---------- */
+async function loadMenu(){
+  try{
+    const [items, cats, tops] = await Promise.all([
+      api('/menu/manage/all'), api('/menu/categories'), api('/menu/manage/toppings')
+    ]);
+    categories = cats;
+    menuList.innerHTML = items.length ? items.map(menuCard).join('') : '<p class="empty">ยังไม่มีเมนู</p>';
+    topBody.innerHTML = tops.length ? tops.map(t => `<tr>
+      <td>${esc(t.name)}</td>
+      <td class="num">${money(t.price)}</td>
+      <td>${t.is_available ? '<span class="tag ok">ขายอยู่</span>' : '<span class="tag no">ปิดอยู่</span>'}</td>
+      <td style="text-align:right">
+        <button class="mini" data-top-edit="${esc(t.id)}">แก้ไข</button>
+        <button class="mini" data-top-toggle="${esc(t.id)}" data-to="${t.is_available ? 'false' : 'true'}">
+          ${t.is_available ? 'ปิดขาย' : 'เปิดขาย'}</button>
+      </td></tr>`).join('') : '<tr><td colspan="4" class="empty">ยังไม่มีท็อปปิ้ง</td></tr>';
+  }catch(e){ menuList.innerHTML = `<div class="err">${esc(e.message)}</div>`; }
+}
+
+function menuCard(m){
+  return `<article class="mitem ${m.is_active ? '' : 'off'}" data-id="${esc(m.id)}">
+    <div class="m-top">
+      <h3>${esc(m.name)}</h3>
+      <span class="m-cat">${esc(m.category_name)}</span>
+      ${m.is_active ? '' : '<span class="tag no">ปิดขาย</span>'}
+      <span class="acts">
+        <button data-item-edit="${esc(m.id)}">แก้ไข</button>
+        <button data-variant-add="${esc(m.id)}">+ ขนาด</button>
+        <button data-item-toggle="${esc(m.id)}" data-to="${m.is_active ? 'false' : 'true'}">
+          ${m.is_active ? 'ปิดขาย' : 'เปิดขาย'}</button>
+      </span>
+    </div>
+    ${m.variants.length ? m.variants.map(v => `<div class="vrow">
+      <span class="sz">${esc(v.size || '-')}${v.crust ? ' · ' + esc(v.crust) : ''}</span>
+      <input type="number" step="0.01" min="0" value="${Number(v.price)}" data-price="${esc(v.id)}" aria-label="ราคา">
+      <button class="save" data-variant-save="${esc(v.id)}">บันทึกราคา</button>
+      <button class="off-btn" data-variant-toggle="${esc(v.id)}" data-to="${v.is_available ? 'false' : 'true'}">
+        ${v.is_available ? 'ทำเครื่องหมายว่าหมด' : 'มีขายแล้ว'}</button>
+      ${v.is_available ? '' : '<span class="tag no">ของหมด</span>'}
+    </div>`).join('') : '<div class="vrow"><span class="m-cat">ยังไม่มีขนาด/ราคา กด "+ ขนาด" เพื่อเพิ่ม</span></div>'}
+  </article>`;
+}
+
+const catOptions = () => categories.map(c => [c.id, c.name]);
+
+addItemBtn.onclick = () => openForm({
+  title: 'เพิ่มเมนูใหม่',
+  fields: [
+    { k:'name', label:'ชื่อเมนู', required:true },
+    { k:'category_id', label:'หมวดหมู่', options: catOptions() },
+    { k:'description', label:'คำอธิบาย' },
+    { k:'image_url', label:'ลิงก์รูป', hint:'เช่น images/pepperoni.png' },
+  ],
+  save: async v => { await api('/menu', { method:'POST', body: JSON.stringify({ ...v, category_id:Number(v.category_id) }) }); loadMenu(); },
+});
+
+addTopBtn.onclick = () => openForm({
+  title: 'เพิ่มท็อปปิ้ง',
+  fields: [{ k:'name', label:'ชื่อท็อปปิ้ง', required:true }, { k:'price', label:'ราคา (บาท)', type:'number', required:true }],
+  save: async v => { await api('/menu/toppings', { method:'POST', body: JSON.stringify(v) }); loadMenu(); },
+});
+
+menuList.onclick = async e => {
+  const b = e.target.closest('button'); if(!b) return;
+  const d = b.dataset;
+  try{
+    if(d.itemToggle){
+      await api('/menu/' + d.itemToggle, { method:'PUT', body: JSON.stringify({ is_active: d.to === 'true' }) });
+      return loadMenu();
+    }
+    if(d.variantToggle){
+      await api('/menu/variants/' + d.variantToggle, { method:'PATCH', body: JSON.stringify({ is_available: d.to === 'true' }) });
+      return loadMenu();
+    }
+    if(d.variantSave){
+      const input = menuList.querySelector(`[data-price="${d.variantSave}"]`);
+      await api('/menu/variants/' + d.variantSave, { method:'PATCH', body: JSON.stringify({ price: Number(input.value) }) });
+      b.textContent = 'บันทึกแล้ว ✓';
+      setTimeout(() => { b.textContent = 'บันทึกราคา'; }, 1500);
+      return;
+    }
+    if(d.variantAdd){
+      return openForm({
+        title: 'เพิ่มขนาด/ราคา',
+        fields: [
+          { k:'size', label:'ขนาด', options:[['S','S — เล็ก'],['M','M — กลาง'],['L','L — ใหญ่'],['STD','ชิ้นเดียว (ไม่มีขนาด)']] },
+          { k:'crust', label:'ขอบแป้ง', options:[['','— ไม่ระบุ —'],['classic','classic'],['thin','thin'],['pan','pan'],['cheese_burst','cheese_burst']] },
+          { k:'price', label:'ราคา (บาท)', type:'number', required:true },
+        ],
+        save: async v => { await api(`/menu/${d.variantAdd}/variants`, { method:'POST', body: JSON.stringify(v) }); loadMenu(); },
+      });
+    }
+    if(d.itemEdit){
+      const m = await api('/menu/' + d.itemEdit);
+      return openForm({
+        title: 'แก้ไขเมนู',
+        fields: [
+          { k:'name', label:'ชื่อเมนู', value:m.name, required:true },
+          { k:'category_id', label:'หมวดหมู่', value:m.category_id, options: catOptions() },
+          { k:'description', label:'คำอธิบาย', value:m.description },
+          { k:'image_url', label:'ลิงก์รูป', value:m.image_url },
+        ],
+        save: async v => { await api('/menu/' + d.itemEdit, { method:'PUT', body: JSON.stringify({ ...v, category_id:Number(v.category_id) }) }); loadMenu(); },
+      });
+    }
+  }catch(err){ alert(err.message); }
+};
+
+topBody.onclick = async e => {
+  const b = e.target.closest('button'); if(!b) return;
+  const d = b.dataset;
+  try{
+    if(d.topToggle){
+      await api('/menu/toppings/' + d.topToggle, { method:'PATCH', body: JSON.stringify({ is_available: d.to === 'true' }) });
+      return loadMenu();
+    }
+    if(d.topEdit){
+      const row = b.closest('tr');
+      return openForm({
+        title: 'แก้ไขท็อปปิ้ง',
+        fields: [
+          { k:'name', label:'ชื่อท็อปปิ้ง', value:row.cells[0].textContent, required:true },
+          { k:'price', label:'ราคา (บาท)', type:'number', value:parseFloat(row.cells[1].textContent.replace(/[^\d.]/g,'')), required:true },
+        ],
+        save: async v => { await api('/menu/toppings/' + d.topEdit, { method:'PATCH', body: JSON.stringify(v) }); loadMenu(); },
+      });
+    }
+  }catch(err){ alert(err.message); }
+};
+
+/* ---------- โปรโมชั่น ---------- */
+const DISCOUNT_FIELDS = (p = {}) => [
+  { k:'name', label:'ชื่อโปรโมชั่น', value:p.name, required:true },
+  { k:'discount_type', label:'ประเภทส่วนลด', value:p.discount_type, options:[['percent','ลดเป็นเปอร์เซ็นต์'],['amount','ลดเป็นจำนวนเงิน']] },
+  { k:'discount_value', label:'มูลค่าส่วนลด', type:'number', value:p.discount_value, required:true, hint:'เช่น 10 = ลด 10% หรือ ลด 10 บาท ตามประเภทด้านบน' },
+  { k:'min_order_amount', label:'ยอดขั้นต่ำ (บาท)', type:'number', value:p.min_order_amount ?? 0 },
+  { k:'start_date', label:'เริ่มใช้ได้', type:'date', value:p.start_date?.slice(0,10) },
+  { k:'end_date', label:'ใช้ได้ถึง', type:'date', value:p.end_date?.slice(0,10) },
+];
+
+async function loadPromos(){
+  try{
+    const list = await api('/promotions');
+    promoBody.innerHTML = list.length ? list.map(p => {
+      const period = [p.start_date?.slice(0,10), p.end_date?.slice(0,10)];
+      return `<tr>
+        <td><b>${esc(p.code)}</b></td>
+        <td>${esc(p.name)}</td>
+        <td class="num">${p.discount_type === 'percent' ? Number(p.discount_value) + '%' : money(p.discount_value)}</td>
+        <td class="num">${money(p.min_order_amount)}</td>
+        <td>${period[0] || period[1] ? esc((period[0] || '—') + ' ถึง ' + (period[1] || '—')) : 'ไม่จำกัด'}</td>
+        <td class="num">${esc(p.used_count)}</td>
+        <td>${p.is_active ? '<span class="tag ok">เปิดใช้</span>' : '<span class="tag no">ปิดอยู่</span>'}</td>
+        <td style="text-align:right">
+          <button class="mini" data-promo-edit="${esc(p.id)}">แก้ไข</button>
+          <button class="mini" data-promo-toggle="${esc(p.id)}" data-to="${p.is_active ? 'false' : 'true'}">
+            ${p.is_active ? 'ปิด' : 'เปิด'}</button>
+        </td></tr>`;
+    }).join('') : '<tr><td colspan="8" class="empty">ยังไม่มีโค้ดส่วนลด</td></tr>';
+  }catch(e){ promoBody.innerHTML = `<tr><td colspan="8"><div class="err">${esc(e.message)}</div></td></tr>`; }
+}
+
+addPromoBtn.onclick = () => openForm({
+  title: 'เพิ่มโค้ดส่วนลด',
+  fields: [{ k:'code', label:'โค้ด', required:true, hint:'ลูกค้าพิมพ์โค้ดนี้ตอนสั่ง เช่น WELCOME10' }, ...DISCOUNT_FIELDS()],
+  save: async v => { await api('/promotions', { method:'POST', body: JSON.stringify(v) }); loadPromos(); },
+});
+
+promoBody.onclick = async e => {
+  const b = e.target.closest('button'); if(!b) return;
+  const d = b.dataset;
+  try{
+    if(d.promoToggle){
+      await api('/promotions/' + d.promoToggle, { method:'PUT', body: JSON.stringify({ is_active: d.to === 'true' }) });
+      return loadPromos();
+    }
+    if(d.promoEdit){
+      const p = (await api('/promotions')).find(x => String(x.id) === d.promoEdit);
+      return openForm({
+        title: 'แก้ไขโค้ด ' + p.code,
+        fields: DISCOUNT_FIELDS(p),
+        save: async v => { await api('/promotions/' + d.promoEdit, { method:'PUT', body: JSON.stringify(v) }); loadPromos(); },
+      });
+    }
+  }catch(err){ alert(err.message); }
+};
+
+/* ---------- พนักงาน ---------- */
+async function loadStaff(){
+  try{
+    const list = await api('/auth/users');
+    staffBody.innerHTML = list.map(u => `<tr>
+      <td><b>${esc(u.username)}</b></td>
+      <td>${esc(u.email || '—')}</td>
+      <td>${esc([u.first_name, u.last_name].filter(Boolean).join(' ') || '—')}</td>
+      <td>${esc(u.phone_number || '—')}</td>
+      <td>${esc(ROLE_TH[u.role] || u.role)}</td>
+      <td>${u.status === 'active' ? '<span class="tag ok">ใช้งานอยู่</span>' : '<span class="tag no">ระงับ</span>'}</td>
+      <td style="text-align:right">
+        <button class="mini" data-user-edit="${esc(u.id)}" data-role="${esc(u.role)}" data-email="${esc(u.email || '')}">แก้ไข</button>
+        <button class="mini" data-user-pw="${esc(u.id)}">ตั้งรหัสใหม่</button>
+        <button class="mini" data-user-status="${esc(u.id)}" data-to="${u.status === 'active' ? 'inactive' : 'active'}">
+          ${u.status === 'active' ? 'ระงับ' : 'เปิดใช้'}</button>
+      </td></tr>`).join('');
+  }catch(e){ staffBody.innerHTML = `<tr><td colspan="7"><div class="err">${esc(e.message)}</div></td></tr>`; }
+}
+
+addStaffBtn.onclick = () => openForm({
+  title: 'เพิ่มบัญชีพนักงาน',
+  fields: [
+    { k:'username', label:'ชื่อผู้ใช้', required:true },
+    { k:'email', label:'อีเมล', type:'email', required:true, hint:'ใช้อีเมลนี้เข้าสู่ระบบได้' },
+    { k:'password', label:'รหัสผ่าน', type:'password', required:true, hint:'อย่างน้อย 8 ตัวอักษร' },
+    { k:'first_name', label:'ชื่อ' },
+    { k:'last_name', label:'นามสกุล' },
+    { k:'phone_number', label:'เบอร์โทร' },
+    { k:'role', label:'สิทธิ์', options: Object.entries(ROLE_TH) },
+  ],
+  save: async v => { await api('/auth/register', { method:'POST', body: JSON.stringify(v) }); loadStaff(); },
+});
+
+staffBody.onclick = async e => {
+  const b = e.target.closest('button'); if(!b) return;
+  const d = b.dataset;
+  try{
+    if(d.userStatus){
+      await api('/auth/users/' + d.userStatus, { method:'PATCH', body: JSON.stringify({ status: d.to }) });
+      return loadStaff();
+    }
+    if(d.userEdit){
+      return openForm({
+        title: 'แก้ไขบัญชีพนักงาน',
+        fields: [
+          { k:'email', label:'อีเมล', type:'email', value:d.email, hint:'ใช้อีเมลนี้เข้าสู่ระบบได้' },
+          { k:'role', label:'สิทธิ์', value:d.role, options: Object.entries(ROLE_TH) },
+        ],
+        save: async v => { await api('/auth/users/' + d.userEdit, { method:'PATCH', body: JSON.stringify(v) }); loadStaff(); },
+      });
+    }
+    if(d.userPw){
+      return openForm({
+        title: 'ตั้งรหัสผ่านใหม่',
+        fields: [{ k:'password', label:'รหัสผ่านใหม่', type:'password', required:true, hint:'อย่างน้อย 8 ตัวอักษร' }],
+        saveLabel: 'ตั้งรหัสใหม่',
+        save: async v => { await api(`/auth/users/${d.userPw}/password`, { method:'POST', body: JSON.stringify(v) }); },
+      });
+    }
+  }catch(err){ alert(err.message); }
+};
 
 /* ---------- คิวออเดอร์ ---------- */
 document.getElementById('statusFilter').onclick = e => {
@@ -207,9 +754,11 @@ document.getElementById('statusFilter').onclick = e => {
 
 async function loadOrders(){
   try{
-    const list = await api('/orders' + (statusFilter ? '?status=' + statusFilter : ''));
-    if(!list.length){ orderList.innerHTML = '<p class="empty">ยังไม่มีออเดอร์ในหมวดนี้</p>'; return; }
-    const full = await Promise.all(list.slice(0,30).map(o => api('/orders/' + o.id)));
+    // detail=1 ได้รายการสินค้า ลูกค้า และการชำระเงินมาพร้อมกันในคำขอเดียว
+    // เดิมต้องยิง 1 + 30 ครั้งทุกรอบรีเฟรช
+    const full = await api('/orders?detail=1&limit=30' + (statusFilter ? '&status=' + statusFilter : ''));
+    if(!full.length){ orderList.innerHTML = '<p class="empty">ยังไม่มีออเดอร์ในหมวดนี้</p>'; return; }
+    loaded = new Map(full.map(o => [String(o.id), o]));
     orderList.innerHTML = full.map(card).join('');
   }catch(e){ orderList.innerHTML = `<div class="err">${esc(e.message)}</div>`; }
 }
@@ -231,7 +780,8 @@ function card(o){
     </ul>
     ${o.note ? `<div class="o-note">หมายเหตุ: ${esc(o.note)}</div>` : ''}
     <div class="o-act">
-      ${paid ? '<span class="paid">ชำระแล้ว</span>'
+      ${paid ? `<span class="paid">ชำระแล้ว</span>
+                <button data-print="${esc(o.id)}">พิมพ์ใบเสร็จ</button>`
              : `<button class="pay" data-pay="${esc(o.id)}">รับชำระ</button>`}
       ${step ? `<button class="next" data-next="${esc(o.id)}" data-to="${esc(step.to)}">${esc(step.label)}</button>` : ''}
       ${['pending','preparing'].includes(o.status) ? `<button class="cancel" data-cancel="${esc(o.id)}">ยกเลิก</button>` : ''}
@@ -245,10 +795,223 @@ orderList.onclick = async e => {
     if(b.dataset.next)   await api(`/orders/${b.dataset.next}/status`, { method:'PATCH', body: JSON.stringify({ status:b.dataset.to }) });
     if(b.dataset.cancel) { if(!confirm('ยกเลิกออเดอร์นี้?')) return;
                            await api(`/orders/${b.dataset.cancel}/status`, { method:'PATCH', body: JSON.stringify({ status:'cancelled' }) }); }
-    if(b.dataset.pay)    await api(`/orders/${b.dataset.pay}/pay`, { method:'POST', body: JSON.stringify({ method:'cash' }) });
+    if(b.dataset.pay)    return openPay(loaded.get(b.dataset.pay));
+    if(b.dataset.print)  return printReceipt(loaded.get(b.dataset.print));
     loadOrders();
   }catch(err){ alert(err.message); }
 };
+
+/* ---------- รับชำระเงิน ---------- */
+/** PromptPay ของร้าน: เบอร์มือถือหรือเลขผู้เสียภาษี 13 หลัก — เว้นว่างไว้ถ้ายังไม่ใช้ QR */
+const PROMPTPAY_ID = '';
+
+const satang = n => Math.round(Number(n || 0) * 100);
+let payOrder = null, payMethod = 'cash', paySubmitting = false;
+
+function openPay(o){
+  if(!o) return;
+  payOrder = o; paySubmitting = false;
+  pSub.textContent = `${o.order_code} · ${o.items.length} รายการ`;
+  pDue.textContent = money(o.total_amount);
+  pReceived.value = ''; pRef.value = ''; pErr.innerHTML = '';
+  pConfirm.textContent = 'ยืนยันรับชำระ';
+  pConfirm.onclick = confirmPay;
+  pBody.querySelectorAll(':scope > :not(#pDone)').forEach(el => el.style.display = '');
+  document.getElementById('pDone')?.remove();
+  document.getElementById('pPrint')?.remove();
+
+  // ปุ่มลัด: พอดี + แบงก์ที่ใกล้ที่สุดที่ครอบยอดได้
+  const due = Number(o.total_amount);
+  const notes = [...new Set([20,50,100,500,1000].map(n => Math.ceil(due / n) * n))]
+    .filter(n => n > due).slice(0, 3);
+  pQuick.innerHTML = [`<button data-v="${due}">พอดี</button>`,
+    ...notes.map(n => `<button data-v="${n}">${n.toLocaleString('th-TH')}</button>`)].join('');
+
+  setMethod(o.payment?.method && o.payment.method !== 'cash' ? o.payment.method : 'cash');
+  payModal.classList.add('open');
+  (payMethod === 'cash' ? pReceived : pRef).focus();
+}
+
+function closePay(){ payModal.classList.remove('open'); payOrder = null; }
+
+function setMethod(m){
+  payMethod = m;
+  [...pMethods.children].forEach(b => b.setAttribute('aria-pressed', b.dataset.m === m));
+  pCash.hidden = m !== 'cash';
+  pOther.hidden = m === 'cash';
+  pQr.hidden = m !== 'promptpay';
+  if(m === 'promptpay') renderQr();
+  updateChange();
+}
+
+function updateChange(){
+  if(!payOrder) return;
+  if(payMethod !== 'cash'){ pConfirm.disabled = false; return; }
+  const diff = satang(pReceived.value) - satang(payOrder.total_amount);
+  const short = pReceived.value === '' || diff < 0;
+  pChange.classList.toggle('short', short && pReceived.value !== '');
+  pChange.firstElementChild.textContent = diff < 0 && pReceived.value !== '' ? 'ขาดอีก' : 'เงินทอน';
+  pChangeAmt.textContent = money(pReceived.value === '' ? 0 : Math.abs(diff) / 100);
+  pConfirm.disabled = short;
+}
+
+async function confirmPay(){
+  if(!payOrder || paySubmitting || pConfirm.disabled) return;
+
+  const body = { method: payMethod, transaction_ref: pRef.value.trim() || null };
+  // เงินสด: ส่งเงินที่รับมาให้เซิร์ฟเวอร์คิดเงินทอนเอง ตัวเลขบนจอเป็นแค่ตัวช่วยให้พนักงานเห็นล่วงหน้า
+  if(payMethod === 'cash' && pReceived.value !== '') body.received_amount = Number(pReceived.value);
+
+  paySubmitting = true; pConfirm.disabled = true; pErr.innerHTML = '';
+  try{
+    const payment = await api(`/orders/${payOrder.id}/pay`, { method:'POST', body: JSON.stringify(body) });
+    showDone(payment);
+    loadOrders();
+  }catch(err){
+    pErr.innerHTML = `<div class="err" style="margin:12px 0 0">${esc(err.message)}</div>`;
+    paySubmitting = false; pConfirm.disabled = false;
+  }
+}
+
+/** payment = แถวที่เซิร์ฟเวอร์บันทึกจริง ใช้ตัวเลขจากตรงนี้เสมอ ไม่ใช่ที่หน้าจอคำนวณไว้ */
+function showDone(payment){
+  const change = Number(payment?.change_amount ?? 0);
+  pBody.querySelectorAll(':scope > *').forEach(el => el.style.display = 'none');
+  pBody.insertAdjacentHTML('beforeend',
+    payment?.change_amount != null
+      ? `<div class="done" id="pDone"><span>ทอนลูกค้า</span><b class="price">${money(change)}</b>
+           <span>รับมา ${money(payment.received_amount)} · ชำระเรียบร้อย</span></div>`
+      : `<div class="done" id="pDone"><b>✓</b><span>ชำระเรียบร้อย (${esc(TH_METHOD[payment?.method] || payment?.method || '')})</span></div>`);
+
+  pConfirm.textContent = 'ปิด'; pConfirm.disabled = false;
+  pConfirm.onclick = closePay;
+  pConfirm.focus();
+
+  // ปุ่มพิมพ์ใบเสร็จอยู่คู่กับปุ่มปิด กดพิมพ์แล้วหน้าต่างยังอยู่ เผื่อกระดาษติดต้องพิมพ์ซ้ำ
+  const paid = { ...payOrder, payment };
+  pFoot.insertAdjacentHTML('afterbegin',
+    `<button class="ghost-btn" id="pPrint">พิมพ์ใบเสร็จ</button>`);
+  document.getElementById('pPrint').onclick = () => printReceipt(paid);
+}
+
+/* ---------- ใบเสร็จ ---------- */
+const SHOP = { name:'FORNO', line1:'พิซซ่าเตาถ่าน', line2:'โทร 02-000-0000' };
+const TH_METHOD = { cash:'เงินสด', promptpay:'PromptPay', card:'บัตร', transfer:'โอน' };
+
+/**
+ * พิมพ์ใบเสร็จขนาด 58 มม. (เครื่องพิมพ์ความร้อนที่ร้านเล็กใช้กัน)
+ * เปิดหน้าต่างใหม่แทนการพิมพ์หน้านี้ทั้งหน้า จะได้ไม่ต้องเขียน CSS ซ่อนทุกอย่างตอนสั่งพิมพ์
+ */
+function printReceipt(order){
+  const p = order.payment || {};
+  const when = new Date(order.created_at).toLocaleString('th-TH', { dateStyle:'short', timeStyle:'short' });
+  const line = (l, r, bold) =>
+    `<div class="row${bold ? ' b' : ''}"><span>${esc(l)}</span><span>${esc(r)}</span></div>`;
+
+  const items = order.items.map(i => {
+    const size = i.size && i.size !== 'STD' ? ' ' + i.size : '';
+    const tops = (i.toppings || []).map(t => `<div class="sub">+ ${esc(t.name)}</div>`).join('');
+    return `<div class="item">
+      <div class="row"><span>${esc(i.menu_name)}${esc(size)} x${esc(i.quantity)}</span>
+        <span>${money(i.total_price)}</span></div>${tops}</div>`;
+  }).join('');
+
+  const w = window.open('', '_blank', 'width=380,height=640');
+  if(!w){ alert('เบราว์เซอร์บล็อกหน้าต่างพิมพ์ กรุณาอนุญาต pop-up ของเว็บนี้'); return; }
+
+  w.document.write(`<!doctype html><html lang="th"><head><meta charset="utf-8">
+  <title>ใบเสร็จ ${esc(order.order_code)}</title><style>
+    @page{size:58mm auto;margin:3mm}
+    body{font-family:'Segoe UI','Leelawadee UI',sans-serif;width:52mm;margin:0 auto;color:#000;font-size:11px;line-height:1.45}
+    .center{text-align:center}
+    .shop{font-size:16px;font-weight:700;letter-spacing:.04em}
+    .row{display:flex;justify-content:space-between;gap:6px}
+    .row.b{font-weight:700;font-size:13px}
+    .sub{color:#333;font-size:10px;padding-left:8px}
+    .item{margin-bottom:3px}
+    hr{border:none;border-top:1px dashed #000;margin:6px 0}
+    .foot{margin-top:8px;font-size:10px}
+    @media print{.noprint{display:none}}
+    .noprint{margin-top:14px;text-align:center}
+    .noprint button{font:inherit;padding:6px 14px}
+  </style></head><body>
+    <div class="center">
+      <div class="shop">${esc(SHOP.name)}</div>
+      <div>${esc(SHOP.line1)}</div><div>${esc(SHOP.line2)}</div>
+    </div>
+    <hr>
+    ${line('เลขที่บิล', order.order_code)}
+    ${line('วันเวลา', when)}
+    ${line('ประเภท', TH[order.order_type] || order.order_type)}
+    ${order.customer?.phone ? line('ลูกค้า', order.customer.phone) : ''}
+    <hr>
+    ${items}
+    <hr>
+    ${line('ยอดรวม', money(order.subtotal))}
+    ${Number(order.discount) > 0 ? line('ส่วนลด', '-' + money(order.discount)) : ''}
+    ${Number(order.delivery_fee) > 0 ? line('ค่าส่ง', money(order.delivery_fee)) : ''}
+    ${line('รวมสุทธิ', money(order.total_amount), true)}
+    <hr>
+    ${line('ชำระโดย', TH_METHOD[p.method] || p.method || '-')}
+    ${p.received_amount != null ? line('รับเงิน', money(p.received_amount)) : ''}
+    ${p.change_amount != null ? line('เงินทอน', money(p.change_amount)) : ''}
+    ${p.transaction_ref ? line('อ้างอิง', p.transaction_ref) : ''}
+    <div class="center foot">ขอบคุณที่ใช้บริการ<br>${esc(SHOP.name)}</div>
+    <div class="noprint"><button onclick="window.print()">พิมพ์อีกครั้ง</button></div>
+  </body></html>`);
+  w.document.close();
+  w.focus();
+  w.onload = () => w.print();     // สั่งพิมพ์อัตโนมัติ ถ้าผู้ใช้กดยกเลิกก็ยังมีปุ่มพิมพ์ซ้ำในหน้าต่าง
+}
+
+/* แป้นตัวเลข — พิมพ์ด้วยนิ้วบนแท็บเล็ตหน้าร้านได้โดยไม่ต้องใช้คีย์บอร์ด */
+pKeypad.onclick = e => {
+  const b = e.target.closest('button[data-k]'); if(!b) return;
+  const k = b.dataset.k;
+  pReceived.value = k === 'back' ? pReceived.value.slice(0, -1) : pReceived.value + k;
+  updateChange();
+};
+
+pMethods.onclick = e => { const b = e.target.closest('button[data-m]'); if(b) setMethod(b.dataset.m); };
+pQuick.onclick = e => { const b = e.target.closest('button[data-v]'); if(b){ pReceived.value = b.dataset.v; updateChange(); } };
+pReceived.oninput = updateChange;
+pClose.onclick = closePay;
+payModal.onclick = e => { if(e.target === payModal) closePay(); };
+document.addEventListener('keydown', e => {
+  if(!payModal.classList.contains('open')) return;
+  if(e.key === 'Escape') closePay();
+  if(e.key === 'Enter' && e.target.tagName === 'INPUT') pConfirm.click();
+});
+
+/* PromptPay QR (มาตรฐาน EMVCo ของ ธปท.) ฝังยอดเงินไว้ในคิวอาร์ ลูกค้าไม่ต้องพิมพ์เอง */
+function renderQr(){
+  qrImg.innerHTML = '';
+  if(!PROMPTPAY_ID){ pQrNote.textContent = 'ยังไม่ได้ตั้งค่า PROMPTPAY_ID ใน admin.html'; return; }
+  if(typeof QRCode === 'undefined'){ pQrNote.textContent = 'โหลดตัวสร้าง QR ไม่สำเร็จ'; return; }
+  new QRCode(qrImg, { text: promptpayPayload(PROMPTPAY_ID, Number(payOrder.total_amount)), width:200, height:200 });
+  pQrNote.textContent = `สแกนจ่าย ${money(payOrder.total_amount)} แล้วตรวจสลิปก่อนกดยืนยัน`;
+}
+
+function promptpayPayload(id, amount){
+  const f = (tag, v) => tag + String(v.length).padStart(2,'0') + v;
+  const digits = id.replace(/\D/g, '');
+  const target = digits.length >= 13
+    ? f('02', digits)                                                   // เลขผู้เสียภาษี / บัตรประชาชน
+    : f('01', ('0066' + digits.replace(/^0/, '')).padStart(13, '0'));   // เบอร์มือถือ
+  const body = f('00','01') + f('01','12') + f('29', f('00','A000000677010111') + target)
+             + f('53','764') + f('54', amount.toFixed(2)) + f('58','TH') + '6304';
+  return body + crc16(body);
+}
+
+function crc16(s){
+  let c = 0xFFFF;
+  for(let i = 0; i < s.length; i++){
+    c ^= s.charCodeAt(i) << 8;
+    for(let k = 0; k < 8; k++) c = (c & 0x8000) ? ((c << 1) ^ 0x1021) : (c << 1);
+    c &= 0xFFFF;
+  }
+  return c.toString(16).toUpperCase().padStart(4, '0');
+}
 
 /* ---------- สต๊อก ---------- */
 async function loadStock(){
@@ -288,6 +1051,19 @@ async function loadReport(){
         <td class="num">${esc(d.total_orders)}</td><td class="num">${money(d.revenue)}</td>
         <td class="num">${money(d.avg_order_value)}</td></tr>`).join('')
     : '<tr><td colspan="4" class="empty">ยังไม่มีออเดอร์ที่ปิดการขาย</td></tr>';
+
+  methodBody.innerHTML = r.by_method?.length
+    ? r.by_method.map(m => `<tr>
+        <td>${esc(TH_METHOD[m.method] || m.method)}</td>
+        <td class="num">${esc(m.bills)}</td>
+        <td class="num">${money(m.amount)}</td>
+        <td class="num">${Number(m.received) ? money(m.received) : '—'}</td>
+        <td class="num">${Number(m.change_given) ? money(m.change_given) : '—'}</td>
+      </tr>`).join('')
+    : '<tr><td colspan="5" class="empty">วันนี้ยังไม่มีการรับชำระเงิน</td></tr>';
+
+  drawerNote.innerHTML = `เงินสดที่ควรมีในลิ้นชักตอนนี้ <b class="price">${money(r.cash_in_drawer)}</b>
+    <span style="color:var(--muted);font-size:12.5px">(เงินสดที่รับมา หักเงินทอนที่จ่ายออกไป ยังไม่รวมเงินทอนตั้งต้น)</span>`;
 
   bestBody.innerHTML = r.best_sellers.length
     ? r.best_sellers.map(b => `<tr><td>${esc(b.name)}</td><td class="num">${esc(b.sold)}</td>

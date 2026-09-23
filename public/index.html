@@ -3,136 +3,181 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="only light">
 <title>FORNO — พิซซ่าเตาถ่าน</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@600;700&family=IBM+Plex+Sans+Thai:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
+/* ธีม Microsoft Word (Office light) — พื้นหลังขาว ตัวอักษรดำ สีเน้นน้ำเงิน Word
+   ชื่อตัวแปรเดิมถูกเก็บไว้ ค่าข้างในเปลี่ยนเป็นโทน Office ทั้งหมด */
 :root{
-  --charcoal:#171310;
-  --dough:#F7F1E4;
-  --ember:#E2521A;
-  --basil:#38614A;
-  --tomato:#B23227;
-  --ink:#2A2320;
-  --muted:#7A6E64;
-  --line:#E0D6C4;
-  --card:#FFFCF6;
+  color-scheme: only light;   /* กันเบราว์เซอร์บังคับแปลงหน้าเว็บเป็นโหมดมืดเอง */
+  background:#FFFFFF;
+  --charcoal:#2B579A;   /* Word blue — ปุ่มหลัก/แถบที่เลือกอยู่ */
+  --accent-dark:#1F4278;
+  --accent-soft:#EFF4FB;
+  --dough:#FFFFFF;      /* ตัวอักษรบนสีเน้น */
+  --ember:#2B579A;      /* ตัวเลข/ราคา */
+  --basil:#107C10;      /* สำเร็จ */
+  --tomato:#A4262C;     /* ผิดพลาด */
+  --ink:#000000;
+  --muted:#3B3A39;
+  --line:#E1DFDD;
+  --card:#FFFFFF;
+  --canvas:#FFFFFF;
+  --hover:#F3F2F1;
+  --btn-line:#8A8886;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{
-  font-family:'IBM Plex Sans Thai',system-ui,sans-serif;
-  background:var(--dough); color:var(--ink);
-  font-size:16px; line-height:1.6;
+  font-family:'Segoe UI','Leelawadee UI','Sarabun',system-ui,sans-serif;
+  background:var(--canvas); color:var(--ink);
+  font-size:15px; line-height:1.55;
 }
-h1,h2,h3,.display{font-family:'Bai Jamjuree','IBM Plex Sans Thai',sans-serif;font-weight:700;line-height:1.15}
+h1,h2,h3,.display{font-weight:600;line-height:1.25}
 button{font:inherit;cursor:pointer;border:none;background:none;color:inherit}
 input,select{font:inherit}
 .price{font-variant-numeric:tabular-nums}
-:focus-visible{outline:2px solid var(--ember);outline-offset:2px}
+:focus-visible{outline:2px solid var(--charcoal);outline-offset:1px}
 
-/* ---------- header ---------- */
-header{background:var(--charcoal);color:var(--dough);position:sticky;top:0;z-index:40}
-.bar{max-width:1180px;margin:0 auto;padding:14px 20px;display:flex;align-items:center;gap:16px}
-.logo{font-family:'Bai Jamjuree',sans-serif;font-weight:700;font-size:22px;letter-spacing:.02em}
-.logo span{color:var(--ember)}
-.bar nav{margin-left:auto;display:flex;gap:20px;font-size:15px;color:#CFC5B5}
-.bar nav a{color:inherit;text-decoration:none}
-.bar nav a:hover{color:var(--dough)}
-@media(max-width:720px){.bar nav{display:none}}
+/* ---------- แถบชื่อเรื่อง + ribbon ---------- */
+header{background:var(--card);color:var(--ink);position:sticky;top:0;z-index:40;border-bottom:1px solid var(--line)}
+.bar{max-width:1180px;margin:0 auto;padding:7px 20px;display:flex;align-items:center;gap:16px}
+.logo{font-weight:600;font-size:15px;letter-spacing:.01em}
+.logo span{color:var(--charcoal)}
+.bar nav{margin-left:auto;display:flex;gap:2px;font-size:14px;color:var(--ink)}
+.bar nav a{color:inherit;text-decoration:none;padding:6px 12px;border-radius:3px}
+.bar nav a:hover{background:var(--hover)}
+.account{font-size:13px;color:var(--ink);text-decoration:none;border:1px solid var(--btn-line);border-radius:3px;padding:5px 12px;white-space:nowrap;max-width:180px;overflow:hidden;text-overflow:ellipsis}
+.account:hover{background:var(--hover);border-color:var(--charcoal)}
+@media(max-width:720px){.bar nav{display:none}.account{margin-left:auto}}
 
-/* ---------- hero ---------- */
-.hero{background:var(--charcoal);color:var(--dough);padding:4px 20px 32px}
+/* ---------- แถบหัวเรื่อง (แทน hero เดิม) ---------- */
+.hero{background:var(--card);color:var(--ink);padding:0 20px 14px;border-bottom:1px solid var(--line)}
 .hero-in{max-width:1180px;margin:0 auto;display:grid;grid-template-columns:1fr auto;gap:24px;align-items:end}
-.hero h1{font-size:clamp(28px,4vw,44px);max-width:22ch}
-.hero p{color:#B8AC9C;margin-top:10px;max-width:44ch;font-size:15px}
-.oven{font-size:13px;color:#B8AC9C;text-align:right;line-height:1.9}
-.oven b{display:block;font-family:'Bai Jamjuree',sans-serif;font-size:40px;color:var(--ember);line-height:1}
+.hero h1{font-size:clamp(19px,2.2vw,24px);max-width:34ch;font-weight:600}
+.hero p{color:var(--muted);margin-top:3px;max-width:56ch;font-size:13.5px}
+.oven{font-size:12.5px;color:var(--muted);text-align:right;line-height:1.6}
+.oven b{display:block;font-size:20px;color:var(--charcoal);font-weight:600;line-height:1.2}
 @media(max-width:720px){.hero-in{grid-template-columns:1fr}.oven{text-align:left}}
 
 /* ---------- layout ---------- */
-.wrap{max-width:1180px;margin:0 auto;padding:28px 20px 120px;display:grid;grid-template-columns:1fr 330px;gap:32px;align-items:start}
+.wrap{padding:28px 24px 120px;display:grid;grid-template-columns:1fr 400px;gap:32px;align-items:start}
 @media(max-width:900px){.wrap{grid-template-columns:1fr}}
 
-/* ---------- filters ---------- */
-.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
-.chip{padding:7px 16px;border-radius:999px;border:1px solid var(--line);background:var(--card);font-size:14px}
-.chip[aria-pressed="true"]{background:var(--charcoal);color:var(--dough);border-color:var(--charcoal)}
+/* ---------- แถบหมวดหมู่ (แบบแท็บ ribbon) ---------- */
+.filters{display:flex;gap:0;flex-wrap:wrap;margin-bottom:18px;background:var(--card);border:1px solid var(--line);border-radius:3px;padding:3px}
+.chip{padding:7px 15px;border-radius:3px;border:1px solid transparent;background:none;font-size:14px;color:var(--ink)}
+.chip:hover{background:var(--hover)}
+.chip[aria-pressed="true"]{background:var(--accent-soft);color:var(--charcoal);border-color:#C7D7EE;font-weight:600}
 
 /* ---------- menu grid ---------- */
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px}
-.item{background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden;display:flex;flex-direction:column}
-.thumb{aspect-ratio:4/3;background:#2b2622;display:flex;align-items:center;justify-content:center;overflow:hidden}
-.thumb img{width:100%;height:100%;object-fit:contain;padding:12px}.item-body{padding:14px;display:flex;flex-direction:column;gap:6px;flex:1}
-.item h3{font-size:18px}
-.item .desc{font-size:13.5px;color:var(--muted);flex:1}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+@media(max-width:1300px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:1100px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:900px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:620px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.item{background:var(--card);border:1px solid var(--line);border-radius:3px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 1.6px 3.6px rgba(0,0,0,.08)}
+.item:hover{border-color:#C8C6C4;box-shadow:0 3.2px 7.2px rgba(0,0,0,.10)}
+.thumb{aspect-ratio:4/3;background:var(--canvas);display:flex;align-items:center;justify-content:center;overflow:hidden;border-bottom:1px solid var(--line)}
+.thumb img{width:100%;height:100%;object-fit:contain;padding:12px}.item-body{padding:13px;display:flex;flex-direction:column;gap:5px;flex:1}
+.item h3{font-size:15.5px;font-weight:600}
+.item .desc{font-size:13px;color:var(--muted);flex:1}
 .item-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:8px}
-.from{font-size:13px;color:var(--muted)}
-.from b{font-family:'Bai Jamjuree',sans-serif;font-size:20px;color:var(--ember);display:block}
-.pick{background:var(--charcoal);color:var(--dough);padding:9px 16px;border-radius:7px;font-size:14px;font-weight:500}
-.pick:hover{background:var(--ember)}
+.from{font-size:12.5px;color:var(--muted)}
+.from b{font-size:17px;color:var(--ink);display:block;font-weight:600}
+.pick{background:var(--charcoal);color:var(--dough);padding:7px 15px;border-radius:3px;font-size:14px;font-weight:600;border:1px solid var(--charcoal)}
+.pick:hover{background:var(--accent-dark);border-color:var(--accent-dark)}
 .sold-out{opacity:.5;pointer-events:none}
 
 /* ---------- cart ---------- */
-.cart{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:18px;position:sticky;top:82px}
-.cart h2{font-size:19px;margin-bottom:14px}
-.empty{color:var(--muted);font-size:14px;padding:18px 0}
-.line{display:grid;grid-template-columns:1fr auto;gap:6px;padding:12px 0;border-top:1px solid var(--line)}
-.line .n{font-weight:600;font-size:15px}
-.line .opt{font-size:13px;color:var(--muted);grid-column:1/-1;margin-top:-4px}
-.qty{display:flex;align-items:center;gap:10px;margin-top:6px}
-.qty button{width:26px;height:26px;border:1px solid var(--line);border-radius:6px;line-height:1}
-.qty button:hover{border-color:var(--ember);color:var(--ember)}
-.rm{font-size:13px;color:var(--tomato);margin-left:auto}
-.promo{display:flex;gap:8px;margin:14px 0}
-.promo input{flex:1;min-width:0;padding:9px 12px;border:1px solid var(--line);border-radius:7px;background:#fff}
-.promo button{padding:9px 14px;border:1px solid var(--charcoal);border-radius:7px;font-size:14px}
-.sums{border-top:1px solid var(--line);padding-top:12px;font-size:14.5px}
+.cart{background:var(--card);border:1px solid var(--line);border-radius:3px;padding:16px;position:fixed;right:24px;bottom:24px;width:400px;max-height:calc(100vh - 110px);overflow-y:auto;z-index:30;box-shadow:0 6.4px 14.4px rgba(0,0,0,.13),0 1.2px 3.6px rgba(0,0,0,.11)}
+.cart h2{font-size:16px;margin-bottom:12px;font-weight:600}
+.empty{color:var(--muted);font-size:13.5px;padding:18px 0}
+.line{display:grid;grid-template-columns:1fr auto;gap:6px;padding:11px 0;border-top:1px solid var(--line)}
+.line .n{font-weight:600;font-size:14.5px}
+.line .opt{font-size:12.5px;color:var(--muted);grid-column:1/-1;margin-top:-4px}
+.qty{display:flex;align-items:center;gap:9px;margin-top:6px}
+.qty button{width:26px;height:26px;border:1px solid var(--btn-line);border-radius:3px;line-height:1;background:#fff}
+.qty button:hover{background:var(--hover);border-color:var(--charcoal);color:var(--charcoal)}
+.rm{font-size:12.5px;color:var(--tomato);margin-left:auto}
+.promo{display:flex;gap:6px;margin:14px 0}
+.promo input{flex:1;min-width:0;padding:7px 10px;border:1px solid var(--btn-line);border-radius:3px;background:#fff}
+.promo input:focus{border-color:var(--charcoal);outline:none;box-shadow:inset 0 -1px 0 var(--charcoal)}
+.promo button{padding:7px 14px;border:1px solid var(--btn-line);border-radius:3px;font-size:14px;background:#fff}
+.promo button:hover{background:var(--hover)}
+.promo-note{font-size:13px;margin:-8px 0 12px;display:flex;gap:8px;align-items:baseline}
+.promo-note.ok{color:var(--basil)}
+.promo-note.warn{color:var(--tomato)}
+.promo-note button{margin-left:auto;font-size:13px;color:var(--muted);text-decoration:underline}
+
+/* รายการโปรโมชั่น */
+.promo-list{padding:6px 0}
+.promo-row{width:100%;text-align:left;display:flex;align-items:center;gap:12px;padding:13px 4px;border-bottom:1px solid var(--line)}
+.promo-row:last-child{border-bottom:none}
+.promo-row:hover{background:var(--hover)}
+.promo-row b{font-size:15px;color:var(--charcoal);font-weight:600}
+.promo-row .d{font-size:13px;color:var(--muted)}
+.promo-row .use{margin-left:auto;background:var(--charcoal);color:var(--dough);padding:6px 13px;border-radius:3px;font-size:13.5px;white-space:nowrap;font-weight:600}
+.sums{border-top:1px solid var(--line);padding-top:11px;font-size:14px}
 .sums div{display:flex;justify-content:space-between;padding:3px 0;color:var(--muted)}
-.sums .total{color:var(--ink);font-weight:600;font-size:17px;padding-top:8px;margin-top:6px;border-top:1px solid var(--line)}
-.sums .total .price{font-family:'Bai Jamjuree',sans-serif;font-size:24px;color:var(--ember)}
-.modes{display:flex;gap:8px;margin:14px 0}
-.modes button{flex:1;padding:9px;border:1px solid var(--line);border-radius:7px;font-size:14px;background:#fff}
-.modes button[aria-pressed="true"]{background:var(--basil);color:#fff;border-color:var(--basil)}
-.go{width:100%;background:var(--ember);color:#fff;padding:13px;border-radius:8px;font-weight:600;font-size:16px}
-.go:disabled{background:#D6CCBC;color:#8A7F73;cursor:not-allowed}
+.sums .total{color:var(--ink);font-weight:600;font-size:15px;padding-top:8px;margin-top:6px;border-top:1px solid var(--line)}
+.sums .total .price{font-size:20px;color:var(--charcoal);font-weight:600}
+.modes{display:flex;gap:6px;margin:13px 0}
+.modes button{flex:1;padding:7px;border:1px solid var(--btn-line);border-radius:3px;font-size:14px;background:#fff}
+.modes button:hover{background:var(--hover)}
+.modes button[aria-pressed="true"]{background:var(--accent-soft);color:var(--charcoal);border-color:var(--charcoal);font-weight:600}
+.go{width:100%;background:var(--charcoal);color:#fff;padding:10px;border-radius:3px;font-weight:600;font-size:15px;border:1px solid var(--charcoal)}
+.go:hover:not(:disabled){background:var(--accent-dark);border-color:var(--accent-dark)}
+.go:disabled{background:#F3F2F1;color:#A19F9D;border-color:#EDEBE9;cursor:not-allowed}
 
 /* ---------- mobile cart bar ---------- */
-.mobile-bar{display:none;position:fixed;left:0;right:0;bottom:0;z-index:45;background:var(--charcoal);color:var(--dough);padding:12px 18px;align-items:center;justify-content:space-between;gap:12px}
-.mobile-bar b{font-family:'Bai Jamjuree',sans-serif;font-size:19px}
-.mobile-bar button{background:var(--ember);color:#fff;padding:9px 18px;border-radius:7px;font-weight:600}
+.mobile-bar{display:none;position:fixed;left:0;right:0;bottom:0;z-index:45;background:var(--card);color:var(--ink);border-top:1px solid var(--line);padding:10px 16px;align-items:center;justify-content:space-between;gap:12px;box-shadow:0 -1.6px 3.6px rgba(0,0,0,.08)}
+.mobile-bar b{font-size:16px;font-weight:600}
+.mobile-bar button{background:var(--charcoal);color:#fff;padding:8px 16px;border-radius:3px;font-weight:600}
 @media(max-width:900px){
   .mobile-bar{display:flex}
-  .cart{position:fixed;inset:0;z-index:50;border-radius:0;overflow-y:auto;display:none}
+  .cart{position:fixed;inset:0;z-index:50;border-radius:0;overflow-y:auto;display:none;width:auto;max-height:none;box-shadow:none}
   .cart.open{display:block}
   .cart .close-cart{display:block}
 }
 .close-cart{display:none;float:right;font-size:22px;color:var(--muted)}
 
 /* ---------- modal ---------- */
-.backdrop{position:fixed;inset:0;background:rgba(23,19,16,.6);display:none;z-index:60;padding:20px;overflow-y:auto}
+.backdrop{position:fixed;inset:0;background:rgba(0,0,0,.4);display:none;z-index:60;padding:20px;overflow-y:auto}
 .backdrop.open{display:grid;place-items:center}
-.modal{background:var(--card);border-radius:12px;max-width:460px;width:100%;overflow:hidden}
-.modal-head{padding:18px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:12px;align-items:start}
-.modal-head h3{font-size:22px}
-.modal-head p{font-size:13.5px;color:var(--muted);margin-top:2px}
+.modal{background:var(--card);border-radius:4px;max-width:460px;width:100%;overflow:hidden;box-shadow:0 25.6px 57.6px rgba(0,0,0,.22),0 4.8px 14.4px rgba(0,0,0,.18)}
+.modal-head{padding:16px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:12px;align-items:start}
+.modal-head h3{font-size:18px;font-weight:600}
+.modal-head p{font-size:13px;color:var(--muted);margin-top:2px}
 .modal-body{padding:18px 20px;max-height:52vh;overflow-y:auto}
 .modal-body h4{font-size:14px;color:var(--muted);font-weight:500;margin-bottom:8px}
 .opt-row{display:flex;align-items:center;gap:11px;padding:9px 0;border-bottom:1px solid var(--line);cursor:pointer;font-size:15px}
 .opt-row:last-child{border-bottom:none}
 .opt-row .p{margin-left:auto;color:var(--muted);font-size:14px}
-.opt-row input{accent-color:var(--ember);width:17px;height:17px}
+.opt-row:hover{background:var(--hover)}
+.opt-row input{accent-color:var(--charcoal);width:16px;height:16px}
 .modal-foot{padding:16px 20px;border-top:1px solid var(--line);display:flex;gap:12px;align-items:center}
 .modal-foot .go{flex:1;width:auto}
 
 /* ---------- toast / receipt ---------- */
-.receipt{background:var(--card);border-radius:12px;max-width:420px;width:100%;padding:26px;text-align:center}
-.receipt .code{font-family:'Bai Jamjuree',sans-serif;font-size:28px;color:var(--basil);margin:10px 0}
-.receipt .amt{font-family:'Bai Jamjuree',sans-serif;font-size:34px;color:var(--ember);margin:14px 0}
-.err{background:#FBEAE7;border:1px solid var(--tomato);color:var(--tomato);padding:11px 14px;border-radius:8px;font-size:14px;margin-bottom:12px}
-.field{margin-bottom:10px}
-.field label{display:block;font-size:13px;color:var(--muted);margin-bottom:4px}
-.field input{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:7px;background:#fff}
+.receipt{background:var(--card);border-radius:4px;max-width:420px;width:100%;padding:26px;text-align:center;box-shadow:0 25.6px 57.6px rgba(0,0,0,.22)}
+.receipt .code{font-size:24px;color:var(--basil);margin:10px 0;font-weight:600}
+.receipt .amt{font-size:28px;color:var(--charcoal);margin:14px 0;font-weight:600}
+.err{background:#FDE7E9;border:1px solid #F1BBBE;border-left:3px solid var(--tomato);color:#4B1113;padding:10px 13px;border-radius:2px;font-size:13.5px;margin-bottom:12px}
+.who{margin:14px 0;padding:11px 13px;border:1px solid var(--line);border-radius:3px;background:var(--canvas);font-size:13.5px}
+.who .hd{display:flex;justify-content:space-between;align-items:baseline;gap:10px;color:var(--muted);font-size:12.5px;margin-bottom:4px}
+.who .hd a{color:var(--charcoal);text-decoration:none;font-size:12.5px}
+.who .nm{font-weight:600}
+.who .ad{color:var(--muted);font-size:13.5px;margin-top:2px}
+.who .ad.miss{color:var(--tomato)}
+
+/* ---------- footer ---------- */
+.foot{padding:14px 24px;border-top:1px solid var(--line);font-size:12px;color:var(--muted)}
+.foot a{color:inherit;text-decoration:none}
+.foot a:hover{color:var(--ember);text-decoration:underline}
+@media(max-width:900px){.foot{padding-bottom:80px}}
 </style>
 </head>
 <body>
@@ -143,8 +188,8 @@ header{background:var(--charcoal);color:var(--dough);position:sticky;top:0;z-ind
     <nav>
       <a href="#menu">เมนู</a>
       <a href="#" id="promoLink">โปรโมชั่น</a>
-      <a href="admin.html">สำหรับพนักงาน</a>
     </nav>
+    <a class="account" id="accountLink" href="login.html">เข้าสู่ระบบ</a>
   </div>
   <div class="hero">
     <div class="hero-in">
@@ -172,6 +217,7 @@ header{background:var(--charcoal);color:var(--dough);position:sticky;top:0;z-ind
       <input id="promoCode" placeholder="โค้ดส่วนลด" autocomplete="off">
       <button id="applyPromo">ใช้โค้ด</button>
     </div>
+    <p class="promo-note" id="promoNote" hidden></p>
 
     <div class="modes">
       <button id="mDelivery" aria-pressed="true">ส่งถึงบ้าน</button>
@@ -185,14 +231,15 @@ header{background:var(--charcoal);color:var(--dough);position:sticky;top:0;z-ind
       <div class="total"><span>รวมสุทธิ</span><span class="price" id="sTotal">0 ฿</span></div>
     </div>
 
-    <div style="margin-top:16px">
-      <div class="field"><label for="cName">ชื่อผู้สั่ง</label><input id="cName" placeholder="สมชาย ใจดี"></div>
-      <div class="field"><label for="cPhone">เบอร์โทร</label><input id="cPhone" placeholder="0812345678" inputmode="tel"></div>
-      <div class="field" id="addrField"><label for="cAddr">ที่อยู่จัดส่ง</label><input id="cAddr" placeholder="บ้านเลขที่ ถนน แขวง เขต"></div>
-    </div>
+    <!-- ข้อมูลผู้สั่งแยกไปอยู่ login.html ตรงนี้แค่แสดงสรุป -->
+    <div class="who" id="who"></div>
     <button class="go" id="submitOrder" disabled>สั่งซื้อ</button>
   </aside>
 </main>
+
+<footer class="foot">
+  <span>© FORNO</span> · <a href="admin.html">สำหรับพนักงาน</a>
+</footer>
 
 <div class="mobile-bar" id="mobileBar">
   <div>ตะกร้า <span id="mCount">0</span> รายการ · <b class="price" id="mTotal">0 ฿</b></div>
@@ -213,6 +260,36 @@ const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt
 
 let menu = [], toppings = [], cart = [], activeCat = null;
 let mode = 'delivery', promo = null;
+
+/* ---------------- ข้อมูลผู้สั่ง (กรอกที่ login.html) ---------------- */
+const CUSTOMER_KEY = 'forno.customer', DRAFT_KEY = 'forno.draft';
+const readJSON = (store, key) => { try { return JSON.parse(store.getItem(key)); } catch { return null; } };
+const customer = readJSON(localStorage, CUSTOMER_KEY);
+
+// ตะกร้าอยู่ในหน่วยความจำ ถ้าไม่เก็บไว้ ไปหน้า login แล้วกลับมาของในตะกร้าจะหาย
+function saveDraft(){
+  try{ sessionStorage.setItem(DRAFT_KEY, JSON.stringify({ cart, mode })); }catch{}
+}
+const draft = readJSON(sessionStorage, DRAFT_KEY);
+if(draft){ cart = Array.isArray(draft.cart) ? draft.cart : []; mode = draft.mode || mode; }
+
+function renderWho(){
+  if(customer) accountLink.textContent = '👤 ' + customer.name;
+  const box = document.getElementById('who');
+  if(!customer){
+    box.innerHTML = `<div class="hd"><span>ผู้สั่ง</span></div>
+      ยังไม่ได้เข้าสู่ระบบ — <a href="login.html" style="color:var(--ember)">กรอกข้อมูลผู้สั่ง</a> ก่อนกดสั่งซื้อ`;
+    return;
+  }
+  const addr = mode === 'delivery'
+    ? (customer.address
+        ? `<div class="ad">ส่งที่: ${esc(customer.address)}</div>`
+        : `<div class="ad miss">ยังไม่มีที่อยู่จัดส่ง — กดแก้ไขเพื่อเพิ่ม</div>`)
+    : `<div class="ad">มารับที่ร้าน</div>`;
+  box.innerHTML = `<div class="hd"><span>ผู้สั่ง</span><a href="login.html">แก้ไข</a></div>
+    <div class="nm">${esc(customer.name)} · ${esc(customer.phone)}</div>
+    ${customer.email ? `<div class="ad">${esc(customer.email)}</div>` : ''}${addr}`;
+}
 
 /* ---------------- โหลดข้อมูล ---------------- */
 async function boot(){
@@ -363,6 +440,7 @@ function renderCart(){
       renderCart();
     };
   }
+  saveDraft();
   updateSums();
 }
 
@@ -381,6 +459,7 @@ function updateSums(){
   mTotal.textContent = money(total);
   mCount.textContent = cart.reduce((s,c) => s + c.qty, 0);
   submitOrder.disabled = cart.length === 0;
+  renderPromoNote();
 }
 
 /* ---------------- โหมด / โค้ดส่วนลด ---------------- */
@@ -390,7 +469,8 @@ function setMode(m){
   mode = m;
   mDelivery.setAttribute('aria-pressed', m === 'delivery');
   mPickup.setAttribute('aria-pressed', m === 'pickup');
-  addrField.style.display = m === 'delivery' ? '' : 'none';
+  saveDraft();
+  renderWho();
   updateSums();
 }
 
@@ -415,7 +495,64 @@ applyPromo.onclick = async () => {
     setTimeout(() => { if(applyPromo.textContent === 'ใช้แล้ว') applyPromo.textContent = 'ใช้โค้ด'; }, 1500);
   }
 };
-promoLink.onclick = e => { e.preventDefault(); alert('WELCOME10 — ลด 10% เมื่อครบ 200 บาท\nSAVE50 — ลด 50 บาท เมื่อครบ 500 บาท'); };
+/** โปรโมชั่นดึงจากฐานข้อมูลจริง กดเลือกแล้วใส่โค้ดให้เลย ลูกค้าไม่ต้องจำโค้ดเอง */
+promoLink.onclick = async e => {
+  e.preventDefault();
+  const modal = document.getElementById('modal');
+  modal.innerHTML = `<div class="modal-head"><div><h3>โปรโมชั่นตอนนี้</h3>
+      <p>กดเลือกโค้ดที่ต้องการ ระบบจะใส่ให้อัตโนมัติ</p></div>
+      <button id="mClose" aria-label="ปิด" style="font-size:22px;color:var(--muted)">✕</button></div>
+    <div class="modal-body"><p class="empty">กำลังโหลด…</p></div>`;
+  document.getElementById('backdrop').classList.add('open');
+  document.getElementById('mClose').onclick = closeModal;
+
+  const body = modal.querySelector('.modal-body');
+  try{
+    const res = await fetch(API + '/promotions/usable');
+    const list = await res.json();
+    if(!res.ok) throw new Error(list.message);
+    body.innerHTML = list.length ? `<div class="promo-list">${list.map(p => `
+      <button class="promo-row" data-code="${esc(p.code)}">
+        <span><b>${esc(p.code)}</b><span class="d"> ${esc(p.name)}</span>
+          <span class="d" style="display:block">${describePromo(p)}</span></span>
+        <span class="use">ใช้โค้ดนี้</span>
+      </button>`).join('')}</div>`
+      : '<p class="empty">ตอนนี้ยังไม่มีโปรโมชั่น</p>';
+
+    body.onclick = ev => {
+      const row = ev.target.closest('[data-code]'); if(!row) return;
+      promoCode.value = row.dataset.code;
+      closeModal();
+      cart_.classList.add('open');   // มือถือ: เปิดตะกร้าให้เห็นส่วนลดที่เพิ่งใช้
+      applyPromo.click();
+    };
+  }catch(err){
+    body.innerHTML = `<p class="empty">โหลดโปรโมชั่นไม่สำเร็จ ${esc(err.message || '')}</p>`;
+  }
+};
+
+function describePromo(p){
+  const off = p.discount_type === 'percent' ? `ลด ${Number(p.discount_value)}%` : `ลด ${money(p.discount_value)}`;
+  const min = Number(p.min_order_amount) > 0 ? ` เมื่อซื้อครบ ${money(p.min_order_amount)}` : '';
+  const till = p.end_date ? ` · ถึง ${new Date(p.end_date).toLocaleDateString('th-TH')}` : '';
+  return off + min + till;
+}
+
+/** บอกสถานะโค้ดใต้ช่องกรอก — ใช้ได้แล้วลดเท่าไร หรือยังขาดอีกกี่บาท */
+function renderPromoNote(){
+  if(!promo){ promoNote.hidden = true; return; }
+  const sub = cart.reduce((s,c) => s + c.unit * c.qty, 0);
+  const need = Number(promo.min_order_amount) - sub;
+  const ok = need <= 0;
+  promoNote.hidden = false;
+  promoNote.className = 'promo-note ' + (ok ? 'ok' : 'warn');
+  promoNote.innerHTML = ok
+    ? `<span>✓ ใช้โค้ด ${esc(promo.code)} แล้ว</span><button id="clearPromo">ลบโค้ด</button>`
+    : `<span>โค้ด ${esc(promo.code)} ต้องซื้อครบ ${money(promo.min_order_amount)} · ขาดอีก ${money(need)}</span><button id="clearPromo">ลบโค้ด</button>`;
+  document.getElementById('clearPromo').onclick = () => {
+    promo = null; promoCode.value = ''; updateSums();
+  };
+}
 
 /* ---------------- ตะกร้าบนมือถือ ---------------- */
 openCart.onclick  = () => cart_.classList.add('open');
@@ -424,10 +561,9 @@ const cart_ = document.getElementById('cart');
 
 /* ---------------- ส่งออเดอร์ ---------------- */
 submitOrder.onclick = async () => {
-  const name  = cName.value.trim();
-  const phone = cPhone.value.trim();
-  if(!phone){ showError('กรอกเบอร์โทรก่อนสั่งซื้อ เราใช้ติดต่อตอนอาหารพร้อม'); return; }
-  if(mode === 'delivery' && !cAddr.value.trim()){ showError('กรอกที่อยู่จัดส่งด้วย'); return; }
+  if(!customer){ location.href = 'login.html'; return; }
+  const { name, phone } = customer;
+  if(mode === 'delivery' && !customer.address){ showError('ยังไม่มีที่อยู่จัดส่ง กด "แก้ไข" ที่ข้อมูลผู้สั่งเพื่อเพิ่ม หรือเลือกรับที่ร้าน'); return; }
 
   submitOrder.disabled = true; submitOrder.textContent = 'กำลังส่งออเดอร์…';
   try{
@@ -437,9 +573,9 @@ submitOrder.onclick = async () => {
     const res = await fetch(API + '/orders', {
       method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({
-        customer: { first_name:first || 'ลูกค้า', last_name:rest.join(' '), phone_number:phone },
+        customer: { first_name:first || 'ลูกค้า', last_name:rest.join(' '), phone_number:phone, email:customer.email || null },
         order_type: mode,
-        address: mode === 'delivery' ? { address_line:cAddr.value.trim() } : undefined,
+        address: mode === 'delivery' ? { address_line:customer.address } : undefined,
         promotion_code: promo?.code || null,
         items: cart.map(c => ({
           pizza_variant_id: c.variantId,
@@ -482,7 +618,8 @@ function showReceipt(o){
   document.getElementById('backdrop').classList.add('open');
 }
 
-setMode('delivery');
+setMode(mode);
+renderCart();
 boot();
 </script>
 </body>

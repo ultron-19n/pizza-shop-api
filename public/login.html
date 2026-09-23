@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="only light">
+<title>FORNO · ข้อมูลผู้สั่ง</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+/* ธีม Microsoft Word (Office light) — ให้เข้าชุดกับหน้าร้านและหลังร้าน */
+:root{
+  color-scheme: only light;   /* กันเบราว์เซอร์บังคับแปลงหน้าเว็บเป็นโหมดมืดเอง */
+  background:#FFFFFF;--charcoal:#2B579A;--accent-dark:#1F4278;--accent-soft:#EFF4FB;--dough:#FFFFFF;
+      --ember:#2B579A;--basil:#107C10;--tomato:#A4262C;
+      --ink:#000000;--muted:#3B3A39;--line:#E1DFDD;--card:#FFFFFF;
+      --canvas:#FFFFFF;--hover:#F3F2F1;--btn-line:#8A8886}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI','Leelawadee UI','Sarabun',system-ui,sans-serif;background:var(--canvas);color:var(--ink);font-size:15px;line-height:1.55}
+h1,h2,h3{font-weight:600;line-height:1.25}
+button{font:inherit;cursor:pointer;border:none;background:none;color:inherit}
+input,textarea{font:inherit}
+:focus-visible{outline:2px solid var(--charcoal);outline-offset:1px}
+
+header{background:var(--card);color:var(--ink);border-bottom:1px solid var(--line)}
+.bar{max-width:1180px;margin:0 auto;padding:7px 20px;display:flex;align-items:center;gap:16px}
+.logo{font-weight:600;font-size:15px;color:inherit;text-decoration:none}
+.logo span{color:var(--charcoal)}
+.back{margin-left:auto;font-size:14px;color:var(--charcoal);text-decoration:none;padding:6px 12px;border-radius:3px}
+.back:hover{background:var(--hover)}
+
+.login{max-width:420px;margin:44px auto;background:var(--card);border:1px solid var(--line);border-radius:4px;padding:26px;box-shadow:0 3.2px 7.2px rgba(0,0,0,.13)}
+@media(max-width:480px){.login{margin:20px 16px;padding:20px}}
+.login h2{font-size:20px;margin-bottom:6px}
+.login p.sub{color:var(--muted);font-size:13.5px;margin-bottom:18px}
+.field{margin-bottom:12px}
+.field label{display:block;font-size:13px;color:var(--ink);margin-bottom:4px}
+.field label small{color:var(--muted)}
+.field input,.field textarea{width:100%;padding:7px 10px;border:1px solid var(--btn-line);border-radius:3px;background:#fff}
+.field input:focus,.field textarea:focus{border-color:var(--charcoal);outline:none;box-shadow:inset 0 -1px 0 var(--charcoal)}
+.field textarea{resize:vertical;min-height:72px}
+.primary{width:100%;background:var(--charcoal);color:#fff;padding:9px;border-radius:3px;font-weight:600;margin-top:6px;border:1px solid var(--charcoal)}
+.primary:hover{background:var(--accent-dark);border-color:var(--accent-dark)}
+.ghost{width:100%;padding:8px;border-radius:3px;border:1px solid var(--btn-line);color:var(--ink);margin-top:10px;font-size:14px;background:#fff}
+.ghost:hover{background:var(--hover);border-color:var(--tomato);color:var(--tomato)}
+.err{background:#FDE7E9;border:1px solid #F1BBBE;border-left:3px solid var(--tomato);color:#4B1113;padding:10px 13px;border-radius:2px;font-size:13.5px;margin-bottom:12px}
+.note{font-size:12.5px;color:var(--muted);margin-top:16px;text-align:center}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="bar">
+    <a class="logo" href="index.html">FORNO<span>.</span></a>
+    <a class="back" href="index.html">← กลับไปเลือกเมนู</a>
+  </div>
+</header>
+
+<main>
+  <form class="login" id="form" novalidate>
+    <h2 id="title">ข้อมูลผู้สั่ง</h2>
+    <p class="sub" id="sub">กรอกครั้งเดียว ครั้งต่อไปสั่งได้ทันทีไม่ต้องกรอกซ้ำ</p>
+    <div id="err"></div>
+
+    <div class="field"><label for="cName">ชื่อผู้สั่ง</label>
+      <input id="cName" autocomplete="name"></div>
+    <div class="field"><label for="cPhone">เบอร์โทร</label>
+      <input id="cPhone" inputmode="tel" autocomplete="tel"></div>
+    <div class="field"><label for="cEmail">อีเมล <small>(ไม่บังคับ — ไว้ส่งใบเสร็จและข่าวโปรโมชั่น)</small></label>
+      <input id="cEmail" type="email" inputmode="email" autocomplete="email" placeholder="you@example.com"></div>
+    <div class="field"><label for="cAddr">ที่อยู่จัดส่ง <small>(ไม่ต้องกรอกถ้ามารับที่ร้าน)</small></label>
+      <textarea id="cAddr" autocomplete="street-address"></textarea></div>
+
+    <button class="primary" id="save" type="submit">เข้าสู่ระบบ</button>
+    <button class="ghost" id="logout" type="button" hidden>ออกจากระบบ (ลบข้อมูลในเครื่องนี้)</button>
+    <p class="note">ข้อมูลเก็บไว้ในเบราว์เซอร์เครื่องนี้เท่านั้น และส่งให้ร้านเฉพาะตอนกดสั่งซื้อ</p>
+  </form>
+</main>
+
+<script>
+const KEY = 'forno.customer';
+const load = () => { try { return JSON.parse(localStorage.getItem(KEY)) || null; } catch { return null; } };
+
+const saved = load();
+if(saved){
+  cName.value = saved.name || '';
+  cPhone.value = saved.phone || '';
+  cEmail.value = saved.email || '';
+  cAddr.value = saved.address || '';
+  title.textContent = 'แก้ไขข้อมูลผู้สั่ง';
+  sub.textContent = 'แก้แล้วกดบันทึก ข้อมูลใหม่จะใช้กับออเดอร์ถัดไป';
+  save.textContent = 'บันทึก';
+  logout.hidden = false;
+}
+
+form.onsubmit = e => {
+  e.preventDefault();
+  err.innerHTML = '';
+  const name = cName.value.trim();
+  const phone = cPhone.value.replace(/[\s-]/g, '');
+  const email = cEmail.value.trim().toLowerCase();
+
+  if(!name) return fail('กรอกชื่อผู้สั่งด้วย');
+  // backend บังคับเบอร์อย่างน้อย 9 หลัก — เช็กก่อนให้รู้ตั้งแต่ตอนนี้ ไม่ใช่ตอนกดสั่ง
+  if(!/^0\d{8,9}$/.test(phone)) return fail('เบอร์โทรไม่ถูกต้อง ใส่ตัวเลข 9–10 หลักขึ้นต้นด้วย 0');
+  // อีเมลไม่บังคับ แต่ถ้ากรอกมาต้องใช้ได้จริง — กฎเดียวกับที่เซิร์ฟเวอร์ตรวจ
+  if(email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return fail('อีเมลไม่ถูกต้อง เช่น you@example.com');
+
+  try{
+    localStorage.setItem(KEY, JSON.stringify({ name, phone, email, address: cAddr.value.trim() }));
+  }catch{
+    return fail('บันทึกข้อมูลไม่ได้ เบราว์เซอร์อาจปิดการเก็บข้อมูลไว้ (เช่น โหมดไม่ระบุตัวตน)');
+  }
+  location.href = 'index.html';
+};
+
+logout.onclick = () => {
+  try{ localStorage.removeItem(KEY); }catch{}
+  location.href = 'index.html';
+};
+
+function fail(msg){
+  const d = document.createElement('div'); d.className = 'err'; d.textContent = msg;
+  err.replaceChildren(d);
+}
+</script>
+</body>
+</html>
