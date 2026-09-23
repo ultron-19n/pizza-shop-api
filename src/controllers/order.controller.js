@@ -28,6 +28,10 @@ export const pay = asyncHandler(async (req, res) => {
   res.json(await orderService.pay(req.params.id, req.body));
 });
 
+export const notifyTransfer = asyncHandler(async (req, res) => {
+  res.json(await orderService.notifyTransfer(req.params.code, req.body));
+});
+
 export const checkPromotion = asyncHandler(async (req, res) => {
   res.json(await orderService.checkPromotion(req.params.code));
 });

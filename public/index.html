@@ -173,6 +173,24 @@ header{background:var(--card);color:var(--ink);position:sticky;top:0;z-index:40;
 .who .ad{color:var(--muted);font-size:13.5px;margin-top:2px}
 .who .ad.miss{color:var(--tomato)}
 
+/* ---------- ขั้นตอนชำระเงิน ---------- */
+.pay-methods{display:grid;gap:8px;margin:4px 0 14px}
+.pm{display:flex;align-items:flex-start;gap:11px;padding:12px 13px;border:1px solid var(--line);border-radius:3px;cursor:pointer;background:#fff;text-align:left;width:100%}
+.pm:hover{background:var(--hover)}
+.pm[aria-pressed="true"]{border-color:var(--charcoal);background:var(--accent-soft);box-shadow:inset 3px 0 0 var(--charcoal)}
+.pm .ic{font-size:20px;line-height:1.2}
+.pm .t{font-weight:600;font-size:14.5px}
+.pm .d{font-size:12.5px;color:var(--muted);margin-top:1px}
+.pay-sum{display:flex;justify-content:space-between;align-items:baseline;padding:11px 13px;background:var(--canvas);border:1px solid var(--line);border-radius:3px;margin-bottom:14px}
+.pay-sum b{font-size:20px;font-weight:600;color:var(--charcoal)}
+.qr-box{text-align:center;padding:6px 0 2px}
+.qr-box .qimg{display:inline-block;padding:10px;background:#fff;border:1px solid var(--line);border-radius:3px}
+.qr-box p{font-size:13px;color:var(--muted);margin-top:8px}
+.step-note{font-size:13px;color:var(--muted);margin-bottom:10px}
+.receipt .paybox-cust{border-top:1px solid var(--line);margin-top:16px;padding-top:14px;text-align:left}
+.receipt .slip-in{width:100%;padding:8px 10px;border:1px solid var(--btn-line);border-radius:3px;margin:8px 0}
+.ok-note{background:#DFF6DD;border:1px solid #A7DFA2;color:#0B6A0B;padding:10px 13px;border-radius:2px;font-size:13.5px;margin-top:10px}
+
 /* ---------- footer ---------- */
 .foot{padding:14px 24px;border-top:1px solid var(--line);font-size:12px;color:var(--muted)}
 .foot a{color:inherit;text-decoration:none}
@@ -251,6 +269,7 @@ header{background:var(--card);color:var(--ink);position:sticky;top:0;z-index:40;
   <div class="modal" id="modal"></div>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
 const API = location.origin + '/api';
 const money = n => Number(n).toLocaleString('th-TH', {minimumFractionDigits:0, maximumFractionDigits:2}) + ' ฿';
@@ -560,12 +579,92 @@ closeCart.onclick = () => cart_.classList.remove('open');
 const cart_ = document.getElementById('cart');
 
 /* ---------------- ส่งออเดอร์ ---------------- */
-submitOrder.onclick = async () => {
-  if(!customer){ location.href = 'login.html'; return; }
-  const { name, phone } = customer;
-  if(mode === 'delivery' && !customer.address){ showError('ยังไม่มีที่อยู่จัดส่ง กด "แก้ไข" ที่ข้อมูลผู้สั่งเพื่อเพิ่ม หรือเลือกรับที่ร้าน'); return; }
+/* ---------------- ขั้นตอนชำระเงิน ---------------- */
+/** PromptPay ของร้าน: เบอร์มือถือหรือเลขผู้เสียภาษี 13 หลัก — เว้นว่าง = ไม่แสดง QR */
+const SHOP_PROMPTPAY = '';
 
-  submitOrder.disabled = true; submitOrder.textContent = 'กำลังส่งออเดอร์…';
+const PAY_METHODS = [
+  { id:'cash',      ic:'💵', t:'เงินสด',        d:'จ่ายตอนรับของ หรือจ่ายที่ร้าน' },
+  { id:'promptpay', ic:'📱', t:'PromptPay',     d:'สแกน QR โอนก่อน ร้านเริ่มทำเมื่อเงินเข้า' },
+  { id:'transfer',  ic:'🏦', t:'โอนผ่านธนาคาร', d:'โอนแล้วแจ้งร้านพร้อมเลขอ้างอิง' },
+  { id:'card',      ic:'💳', t:'บัตรเครดิต/เดบิต', d:'รูดบัตรตอนรับของหรือที่ร้าน' },
+];
+
+let payMethod = 'cash';
+
+/** หน้าจอเลือกวิธีชำระเงิน ก่อนส่งออเดอร์จริง */
+function openCheckout(){
+  if(!customer){ location.href = 'login.html'; return; }
+  if(mode === 'delivery' && !customer.address){
+    showError('ยังไม่มีที่อยู่จัดส่ง กด "แก้ไข" ที่ข้อมูลผู้สั่งเพื่อเพิ่ม หรือเลือกรับที่ร้าน');
+    return;
+  }
+
+  const total = totalNow();
+  const modal = document.getElementById('modal');
+  modal.className = 'modal';
+  modal.innerHTML = `
+    <div class="modal-head">
+      <div><h3>เลือกวิธีชำระเงิน</h3>
+        <p>${esc(customer.name)} · ${esc(customer.phone)} · ${mode === 'delivery' ? 'ส่งถึงบ้าน' : 'รับที่ร้าน'}</p></div>
+      <button id="mClose" aria-label="ปิด" style="font-size:20px;color:var(--muted)">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="pay-sum"><span>ยอดที่ต้องชำระ</span><b class="price">${money(total)}</b></div>
+      <div class="pay-methods" id="pmList">
+        ${PAY_METHODS.map(m => `
+          <button class="pm" data-pm="${m.id}" aria-pressed="${m.id === payMethod}">
+            <span class="ic">${m.ic}</span>
+            <span><span class="t">${esc(m.t)}</span><span class="d">${esc(m.d)}</span></span>
+          </button>`).join('')}
+      </div>
+      <div id="pmExtra"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="go" id="placeOrder">ยืนยันสั่งซื้อ · ${money(total)}</button>
+    </div>`;
+
+  document.getElementById('backdrop').classList.add('open');
+  document.getElementById('mClose').onclick = closeModal;
+  document.getElementById('pmList').onclick = e => {
+    const b = e.target.closest('[data-pm]'); if(!b) return;
+    payMethod = b.dataset.pm;
+    [...b.parentElement.children].forEach(x => x.setAttribute('aria-pressed', x === b));
+    renderPayExtra();
+  };
+  document.getElementById('placeOrder').onclick = sendOrder;
+  renderPayExtra();
+}
+
+/** ข้อความอธิบายเพิ่มของแต่ละวิธี — บอกให้ชัดว่าหลังกดยืนยันจะเกิดอะไรขึ้น */
+function renderPayExtra(){
+  const box = document.getElementById('pmExtra');
+  if(!box) return;
+  const texts = {
+    cash:      'เตรียมเงินสดให้พอดีจะช่วยให้รับของได้เร็วขึ้น',
+    promptpay: 'กดยืนยันแล้วจะมี QR ให้สแกน โอนเสร็จกดปุ่มแจ้งโอนในหน้าถัดไปได้เลย',
+    transfer:  'กดยืนยันแล้วจะมีเลขบัญชีและปุ่มแจ้งโอนให้ในหน้าถัดไป',
+    card:      'ทางร้านจะเตรียมเครื่องรูดบัตรไว้ให้ตอนส่งของหรือตอนมารับ',
+  };
+  box.innerHTML = `<p class="step-note">${esc(texts[payMethod] || '')}</p>`;
+}
+
+const totalNow = () => {
+  const sub = cart.reduce((s,c) => s + c.unit * c.qty, 0);
+  let disc = 0;
+  if(promo && sub >= Number(promo.min_order_amount)){
+    disc = promo.discount_type === 'percent' ? sub * Number(promo.discount_value)/100 : Number(promo.discount_value);
+    disc = Math.min(disc, sub);
+  }
+  return sub - disc + ((mode === 'delivery' && cart.length) ? DELIVERY_FEE : 0);
+};
+
+submitOrder.onclick = openCheckout;
+
+async function sendOrder(){
+  const { name, phone } = customer;
+  const btn = document.getElementById('placeOrder');
+  btn.disabled = true; btn.textContent = 'กำลังส่งออเดอร์…';
   try{
     const [first, ...rest] = name.split(' ');
 
@@ -577,6 +676,7 @@ submitOrder.onclick = async () => {
         order_type: mode,
         address: mode === 'delivery' ? { address_line:customer.address } : undefined,
         promotion_code: promo?.code || null,
+        payment_method: payMethod,
         items: cart.map(c => ({
           pizza_variant_id: c.variantId,
           quantity: c.qty,
@@ -590,12 +690,15 @@ submitOrder.onclick = async () => {
     cart = []; promo = null; promoCode.value = ''; renderCart();
     cart_.classList.remove('open');
   }catch(err){
-    showError(err.message || 'ส่งออเดอร์ไม่สำเร็จ ลองอีกครั้ง');
+    btn.disabled = false; btn.textContent = 'ยืนยันสั่งซื้อ';
+    const box = document.getElementById('pmExtra');
+    if(box) box.innerHTML = `<div class="err">${esc(err.message || 'ส่งออเดอร์ไม่สำเร็จ ลองอีกครั้ง')}</div>`;
+    else showError(err.message || 'ส่งออเดอร์ไม่สำเร็จ ลองอีกครั้ง');
   }finally{
     submitOrder.textContent = 'สั่งซื้อ';
     updateSums();   // ตะกร้าว่างหลังสั่งสำเร็จ ปุ่มต้องกลับไปปิด ไม่ใช่เปิดค้างไว้ให้กดซ้ำ
   }
-};
+}
 
 function showError(msg){
   document.querySelectorAll('.err').forEach(e => e.remove());
@@ -604,18 +707,106 @@ function showError(msg){
   setTimeout(() => d.remove(), 6000);
 }
 
+/** ธนาคารของร้าน — แก้ให้ตรงกับบัญชีจริงก่อนเปิดใช้งาน */
+const SHOP_BANK = { bank:'กสิกรไทย', account:'123-4-56789-0', name:'ร้าน FORNO' };
+
 function showReceipt(o){
+  const needsTransfer = payMethod === 'promptpay' || payMethod === 'transfer';
+
   document.getElementById('modal').outerHTML = `<div class="receipt" id="modal">
-    <div style="font-size:44px">🍕</div>
-    <h3 style="margin-top:8px">รับออเดอร์แล้ว</h3>
+    <div style="font-size:40px">${needsTransfer ? '⏳' : '🍕'}</div>
+    <h3 style="margin-top:8px">${needsTransfer ? 'รอชำระเงิน' : 'รับออเดอร์แล้ว'}</h3>
     <div class="code">${esc(o.order_code)}</div>
     <p style="color:var(--muted);font-size:14px">
-      ${o.order_type === 'delivery' ? 'กำลังเตรียมของ แล้วจะออกส่งภายใน 30–45 นาที' : 'มารับที่ร้านได้ในอีกประมาณ 20 นาที'}
+      ${needsTransfer
+        ? 'โอนแล้วกดปุ่มแจ้งโอนด้านล่าง ทางร้านจะเริ่มทำเมื่อตรวจสอบยอดเงินแล้ว'
+        : (o.order_type === 'delivery' ? 'กำลังเตรียมของ แล้วจะออกส่งภายใน 30–45 นาที' : 'มารับที่ร้านได้ในอีกประมาณ 20 นาที')}
     </p>
     <div class="amt price">${money(o.total_amount)}</div>
-    <button class="go" onclick="location.reload()">สั่งเพิ่มอีกรอบ</button>
+    ${needsTransfer ? transferBox(o) : ''}
+    <button class="go" onclick="location.reload()" style="margin-top:14px">สั่งเพิ่มอีกรอบ</button>
   </div>`;
+
   document.getElementById('backdrop').classList.add('open');
+  if(needsTransfer) setupTransferBox(o);
+}
+
+/** กล่องโอนเงิน: QR PromptPay หรือเลขบัญชี พร้อมช่องกรอกเลขอ้างอิงและปุ่มแจ้งโอน */
+function transferBox(o){
+  const isQr = payMethod === 'promptpay';
+  return `<div class="paybox-cust">
+    ${isQr
+      ? `<div class="qr-box"><div class="qimg" id="custQr"></div>
+           <p id="custQrNote">สแกนด้วยแอปธนาคาร ยอดเงินอยู่ในคิวอาร์แล้ว ไม่ต้องพิมพ์เอง</p></div>`
+      : `<div style="font-size:14px;line-height:1.9">
+           <div>ธนาคาร <b>${esc(SHOP_BANK.bank)}</b></div>
+           <div>เลขบัญชี <b id="acctNo">${esc(SHOP_BANK.account)}</b>
+             <button id="copyAcct" style="color:var(--charcoal);text-decoration:underline;font-size:13px">คัดลอก</button></div>
+           <div>ชื่อบัญชี ${esc(SHOP_BANK.name)}</div>
+         </div>`}
+    <label for="slipRef" style="display:block;font-size:13px;color:var(--muted);margin-top:12px">
+      เลขอ้างอิงจากสลิป (ไม่บังคับ แต่ช่วยให้ร้านหาเจอเร็วขึ้น)</label>
+    <input class="slip-in" id="slipRef" maxlength="100" placeholder="เช่น 4 ตัวท้ายของเลขอ้างอิง">
+    <button class="go" id="notifyBtn">โอนแล้ว แจ้งร้าน</button>
+    <div id="notifyMsg"></div>
+  </div>`;
+}
+
+function setupTransferBox(o){
+  if(payMethod === 'promptpay') renderCustomerQr(o);
+
+  document.getElementById('copyAcct')?.addEventListener('click', async e => {
+    try{ await navigator.clipboard.writeText(SHOP_BANK.account); e.target.textContent = 'คัดลอกแล้ว'; }
+    catch{ e.target.textContent = 'คัดลอกไม่ได้ กรุณาจดเอง'; }
+  });
+
+  const btn = document.getElementById('notifyBtn');
+  btn.onclick = async () => {
+    btn.disabled = true; btn.textContent = 'กำลังแจ้ง…';
+    try{
+      const res = await fetch(`${API}/orders/code/${encodeURIComponent(o.order_code)}/notify-transfer`, {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ reference: document.getElementById('slipRef').value.trim() || null }),
+      });
+      const data = await res.json();
+      if(!res.ok) throw new Error(data.message);
+      document.getElementById('notifyMsg').innerHTML = `<div class="ok-note">${esc(data.message)}</div>`;
+      btn.textContent = 'แจ้งเรียบร้อย';
+    }catch(err){
+      document.getElementById('notifyMsg').innerHTML = `<div class="err" style="margin-top:10px">${esc(err.message)}</div>`;
+      btn.disabled = false; btn.textContent = 'โอนแล้ว แจ้งร้าน';
+    }
+  };
+}
+
+function renderCustomerQr(o){
+  const box = document.getElementById('custQr');
+  const note = document.getElementById('custQrNote');
+  if(!SHOP_PROMPTPAY){ box.remove(); note.textContent = 'ร้านยังไม่ได้ตั้งค่า PromptPay กรุณาติดต่อร้านเพื่อขอช่องทางโอน'; return; }
+  if(typeof QRCode === 'undefined'){ box.remove(); note.textContent = 'โหลดตัวสร้าง QR ไม่สำเร็จ กรุณาติดต่อร้าน'; return; }
+  new QRCode(box, { text: promptpayPayload(SHOP_PROMPTPAY, Number(o.total_amount)), width:190, height:190 });
+}
+
+/* สร้างคิวอาร์ PromptPay ตามมาตรฐาน EMVCo ของ ธปท. โดยฝังยอดเงินไว้ในคิวอาร์ */
+function promptpayPayload(id, amount){
+  const f = (tag, v) => tag + String(v.length).padStart(2,'0') + v;
+  const digits = id.replace(/\D/g, '');
+  const target = digits.length >= 13
+    ? f('02', digits)
+    : f('01', ('0066' + digits.replace(/^0/, '')).padStart(13, '0'));
+  const body = f('00','01') + f('01','12') + f('29', f('00','A000000677010111') + target)
+             + f('53','764') + f('54', amount.toFixed(2)) + f('58','TH') + '6304';
+  return body + crc16(body);
+}
+
+function crc16(s){
+  let c = 0xFFFF;
+  for(let i = 0; i < s.length; i++){
+    c ^= s.charCodeAt(i) << 8;
+    for(let k = 0; k < 8; k++) c = (c & 0x8000) ? ((c << 1) ^ 0x1021) : (c << 1);
+    c &= 0xFFFF;
+  }
+  return c.toString(16).toUpperCase().padStart(4, '0');
 }
 
 setMode(mode);

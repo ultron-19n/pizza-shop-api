@@ -275,6 +275,28 @@ async function findValidPromotion(code, db) {
  * ตรวจโค้ดส่วนลดให้หน้าเว็บแสดงยอดได้ตรงก่อนกดสั่ง
  * คืนเฉพาะเงื่อนไขของโค้ดที่ผู้ใช้พิมพ์มาเอง — ยอดจริงยังคิดใหม่ที่เซิร์ฟเวอร์ตอนสร้างออเดอร์เสมอ
  */
+/**
+ * ลูกค้าแจ้งว่าโอนเงินแล้ว — เรียกได้โดยไม่ต้องล็อกอิน จึงต้องกันไว้หลายชั้น
+ * - อ้างด้วยรหัสบิล (สุ่ม) ไม่ใช่ id ที่เดาได้จากการนับ
+ * - แค่บันทึกว่า "ลูกค้าแจ้ง" ไม่ได้ทำให้บิลกลายเป็นจ่ายแล้ว พนักงานต้องตรวจเงินเข้าแล้วกดรับชำระเอง
+ */
+export async function notifyTransfer(orderCode, { reference = null } = {}) {
+  const order = await orderRepo.findByCode(String(orderCode || '').trim().toUpperCase());
+  if (!order) throw ApiError.notFound('ไม่พบบิลนี้ กรุณาตรวจรหัสบิลอีกครั้ง');
+
+  if (order.status === ORDER_STATUS.CANCELLED) throw ApiError.badRequest('บิลนี้ถูกยกเลิกแล้ว');
+  if (order.payment_status === 'paid') throw ApiError.conflict('บิลนี้ชำระเงินเรียบร้อยแล้ว');
+
+  const updated = await orderRepo.markSlipNotified(order.id, clip(reference, 100) || null);
+  if (!updated) throw ApiError.conflict('บิลนี้ชำระเงินเรียบร้อยแล้ว');
+
+  return {
+    order_code: order.order_code,
+    total_amount: order.total_amount,
+    message: 'แจ้งโอนเรียบร้อย ทางร้านจะตรวจสอบยอดเงินแล้วเริ่มทำอาหารให้',
+  };
+}
+
 export async function checkPromotion(code) {
   const p = await findValidPromotion(code);
   return {

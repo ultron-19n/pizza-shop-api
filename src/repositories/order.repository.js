@@ -122,6 +122,33 @@ export const markPaid = async (orderId, { method, transaction_ref, received_amou
   return rows[0] || null;
 };
 
+export const findByCode = async (code, db = pool) => {
+  const { rows } = await db.query(
+    `SELECT o.id, o.order_code, o.status, o.total_amount,
+            p.status AS payment_status, p.method AS payment_method
+     FROM orders o
+     LEFT JOIN payments p ON p.order_id = o.id
+     WHERE o.order_code = $1`,
+    [code]
+  );
+  return rows[0] || null;
+};
+
+/**
+ * ลูกค้าแจ้งว่าโอนเงินแล้ว — บันทึกเวลาและเลขอ้างอิงที่ลูกค้าให้มา
+ * ไม่เปลี่ยนสถานะเป็น paid เด็ดขาด เพราะยังไม่มีใครตรวจว่าเงินเข้าจริง พนักงานต้องกดยืนยันเอง
+ */
+export const markSlipNotified = async (orderId, ref, db = pool) => {
+  const { rows } = await db.query(
+    `UPDATE payments
+     SET slip_notified_at = CURRENT_TIMESTAMP,
+         transaction_ref  = COALESCE($1, transaction_ref)
+     WHERE order_id = $2 AND status = 'unpaid' RETURNING *`,
+    [ref, orderId]
+  );
+  return rows[0] || null;
+};
+
 /** คืนเงินได้เฉพาะรายการที่จ่ายแล้ว — เงื่อนไขอยู่ใน UPDATE กันคืนซ้ำสองครั้ง */
 export const markRefunded = async (orderId, db = pool) => {
   const { rows } = await db.query(

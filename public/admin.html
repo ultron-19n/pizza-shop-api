@@ -81,6 +81,7 @@ main{max-width:1080px;margin:0 auto;padding:22px 20px 80px}
 .o-act .pay{border-color:var(--basil);color:var(--basil)}
 .o-act .cancel{border-color:var(--tomato);color:var(--tomato)}
 .paid{font-size:13px;color:var(--basil);align-self:center}
+.notified{font-size:12.5px;color:#8A6D00;background:#FFF4CE;border:1px solid #F2D98C;border-radius:2px;padding:4px 9px;align-self:center}
 
 /* table */
 table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line);border-radius:3px;overflow:hidden}
@@ -783,6 +784,9 @@ function card(o){
       ${paid ? `<span class="paid">ชำระแล้ว</span>
                 <button data-print="${esc(o.id)}">พิมพ์ใบเสร็จ</button>`
              : `<button class="pay" data-pay="${esc(o.id)}">รับชำระ</button>`}
+      ${!paid && o.payment?.slip_notified_at
+          ? `<span class="notified">ลูกค้าแจ้งโอนแล้ว${o.payment.transaction_ref ? ' · อ้างอิง ' + esc(o.payment.transaction_ref) : ''} — ตรวจยอดเงินก่อนกดรับชำระ</span>`
+          : ''}
       ${step ? `<button class="next" data-next="${esc(o.id)}" data-to="${esc(step.to)}">${esc(step.label)}</button>` : ''}
       ${['pending','preparing'].includes(o.status) ? `<button class="cancel" data-cancel="${esc(o.id)}">ยกเลิก</button>` : ''}
     </div>

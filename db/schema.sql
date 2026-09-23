@@ -159,6 +159,7 @@ CREATE TABLE IF NOT EXISTS payments (
   transaction_ref VARCHAR(100),         -- เลขอ้างอิงสลิป / 4 ตัวท้ายบัตร
   received_amount NUMERIC(10,2),        -- เงินสดที่รับมาจากลูกค้า (ไว้ตรวจลิ้นชักตอนปิดกะ)
   change_amount NUMERIC(10,2),          -- เงินทอน
+  slip_notified_at TIMESTAMP,           -- เวลาที่ลูกค้ากดแจ้งว่าโอนแล้ว (ยังไม่ใช่การยืนยันว่าได้รับเงิน)
   paid_at TIMESTAMP
 );
 

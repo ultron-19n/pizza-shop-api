@@ -36,6 +36,11 @@ router.get('/report/summary', ...manager, controller.summary);
 // เปิดให้ลูกค้าตรวจโค้ดก่อนกดสั่ง จะได้เห็นยอดตรงกับที่เซิร์ฟเวอร์คิดจริง
 router.get('/promotions/:code', controller.checkPromotion);
 
+// ลูกค้าแจ้งว่าโอนแล้ว (ไม่ต้องล็อกอิน) — จำกัดจำนวนครั้งกันคนยิงรัวใส่รหัสบิลมั่ว ๆ
+router.post('/code/:code/notify-transfer',
+  rateLimit({ name: 'notify-transfer', max: 10, windowMs: 10 * 60 * 1000 }),
+  controller.notifyTransfer);
+
 // authOptional: ลูกค้าสั่งเองได้ แต่ถ้าพนักงานเป็นคนกด จะบันทึกว่าใครรับออเดอร์
 // กันสคริปต์ยิงสั่งซื้อรัว ๆ จนสต๊อกหมดและคิวออเดอร์ท่วม
 const orderLimit = rateLimit({ name: 'create-order', max: 12, windowMs: 10 * 60 * 1000,
