@@ -12,8 +12,12 @@ export const ROLES = Object.freeze({
   RIDER: 'rider',
 });
 
-/** role ที่จัดการเมนู ราคา และวัตถุดิบได้ */
+/** role ที่จัดการเมนู ราคา โปรโมชั่น และดูรายงานยอดขายได้ */
 export const MANAGEMENT_ROLES = [ROLES.ADMIN, ROLES.MANAGER];
+
+/** role ที่ทำงานหน้าร้านได้ — รับออเดอร์ รับเงิน จัดการสต๊อก และเห็นข้อมูลลูกค้า
+ *  ไรเดอร์ไม่รวมอยู่ในกลุ่มนี้ เพราะมีหน้าที่แค่ส่งของ ไม่ต้องเห็นออเดอร์ทั้งร้านหรือรายชื่อลูกค้า */
+export const STAFF_ROLES = [ROLES.ADMIN, ROLES.MANAGER, ROLES.STAFF];
 
 export const ORDER_STATUS = Object.freeze({
   PENDING: 'pending',

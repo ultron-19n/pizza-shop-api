@@ -17,7 +17,10 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 export function createApp() {
   const app = express();
 
-  app.use(cors());
+  // ตั้ง ALLOWED_ORIGINS แล้วจะรับเฉพาะโดเมนที่ระบุ ไม่ตั้ง (ตอนพัฒนา) = รับทุกโดเมน
+  app.use(cors(env.ALLOWED_ORIGINS.length
+    ? { origin: env.ALLOWED_ORIGINS, credentials: true }
+    : {}));
   app.use(express.json({ limit: '1mb' }));
   app.use(morgan(env.NODE_ENV === 'production' ? 'combined' : 'dev'));
 

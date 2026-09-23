@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
 import { ApiError } from '../utils/ApiError.js';
+import { env } from '../config/env.js';
 
 /** ตรวจ JWT จาก header: Authorization: Bearer <token> */
 export function authRequired(req, _res, next) {
@@ -7,7 +8,7 @@ export function authRequired(req, _res, next) {
   if (!token) return next(ApiError.unauthorized('ไม่พบ token กรุณาเข้าสู่ระบบ'));
 
   try {
-    req.user = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = jwt.verify(token, env.JWT_SECRET);
     next();
   } catch (err) {
     const message = err.name === 'TokenExpiredError'
@@ -22,7 +23,7 @@ export function authRequired(req, _res, next) {
 export function authOptional(req, _res, next) {
   const token = extractToken(req);
   if (token) {
-    try { req.user = jwt.verify(token, process.env.JWT_SECRET); } catch { /* ไม่เป็นไร */ }
+    try { req.user = jwt.verify(token, env.JWT_SECRET); } catch { /* ไม่เป็นไร */ }
   }
   next();
 }
